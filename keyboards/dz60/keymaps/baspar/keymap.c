@@ -95,6 +95,43 @@ void check_accent(void) {
           case REG_CED: send_unicode_hex_string("00E7"); break;
         }
         break;
+      case 'A':
+        switch (ALT_MOD) {
+          case REG_CIR: send_unicode_hex_string("00C2"); break;
+          case REG_GRV: send_unicode_hex_string("00C0"); break;
+        }
+        break;
+      case 'E':
+        switch (ALT_MOD) {
+          case REG_ACU: send_unicode_hex_string("00C9"); break;
+          case REG_CIR: send_unicode_hex_string("00CA"); break;
+          case REG_GRV: send_unicode_hex_string("00C8"); break;
+          case REG_TRM: send_unicode_hex_string("00CB"); break;
+        }
+        break;
+      case 'I':
+        switch (ALT_MOD) {
+          case REG_CIR: send_unicode_hex_string("00CE"); break;
+          case REG_TRM: send_unicode_hex_string("00CF"); break;
+        }
+        break;
+      case 'O':
+        switch (ALT_MOD) {
+          case REG_CIR: send_unicode_hex_string("00D4"); break;
+        }
+        break;
+      case 'U':
+        switch (ALT_MOD) {
+          case REG_CIR: send_unicode_hex_string("00DB"); break;
+          case REG_GRV: send_unicode_hex_string("00D9"); break;
+          case REG_TRM: send_unicode_hex_string("00DC"); break;
+        }
+        break;
+      case 'C':
+        switch (ALT_MOD) {
+          case REG_CED: send_unicode_hex_string("00C7"); break;
+        }
+        break;
     }
     ALT_LETTER = '\0';
     ALT_MOD = -1;
