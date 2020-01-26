@@ -9,11 +9,16 @@ typedef union {
 } user_config_t;
 user_config_t user_config;
 
+// TapDance
+enum {
+  TAP_LAYER
+};
+
 // Layers
 #define _DEFAULT 0
 #define _DEFAULT_MAC 1
 #define _FUNCTION 2
-#define _FUNCTION_MAC 3
+#define _ACCENT 3
 
 // Custom keycodes
 #define ______ KC_TRNS
@@ -253,11 +258,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_DEFAULT] = LAYOUT_60_split_rshift_5x1u(
-      KC_GRAVE         , KC_1   , KC_2   , KC_3   , KC_4         , KC_5   , KC_6   , KC_7 , KC_8   , KC_9   , KC_0   , KC_MINS, KC_EQL  , KC_BSPC,
-      KC_TAB           , KC_Q   , KC_W   , KC_E   , KC_R         , KC_T   , KC_Y   , KC_U , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC , KC_BSLS,
-      LCTL_T(KC_ESCAPE), KC_A   , KC_S   , KC_D   , KC_F         , KC_G   , KC_H   , KC_J , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT  ,
-      KC_LSFT          , KC_Z   , KC_X   , KC_C   , KC_V         , KC_B   , KC_N   , KC_M , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_DEL  ,
-      KC_LCTL          , KC_LGUI, KC_LALT, KC_SPC , MO(_FUNCTION), KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT
+        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4         ,KC_5   ,KC_6   ,KC_7 ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
+        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R         ,KC_T   ,KC_Y   ,KC_U ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
+        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F         ,KC_G   ,KC_H   ,KC_J ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
+        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V         ,KC_B   ,KC_N   ,KC_M ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
+        KC_LCTL          ,KC_LGUI,KC_LALT,KC_SPC,TD(TAP_LAYER),KC_LEFT,KC_DOWN,KC_UP,KC_RIGHT
       ),
 
   /* Default Mac
@@ -275,54 +280,78 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_DEFAULT_MAC] = LAYOUT_60_split_rshift_5x1u(
-      KC_GRAVE         , KC_1   , KC_2   , KC_3   , KC_4             , KC_5   , KC_6   , KC_7 , KC_8   , KC_9   , KC_0   , KC_MINS, KC_EQL  , KC_BSPC,
-      KC_TAB           , KC_Q   , KC_W   , KC_E   , KC_R             , KC_T   , KC_Y   , KC_U , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC , KC_BSLS,
-      LCTL_T(KC_ESCAPE), KC_A   , KC_S   , KC_D   , KC_F             , KC_G   , KC_H   , KC_J , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT  ,
-      KC_LSFT          , KC_Z   , KC_X   , KC_C   , KC_V             , KC_B   , KC_N   , KC_M , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_DEL  ,
-      KC_LCTL          , KC_LALT, KC_LGUI, KC_SPC , MO(_FUNCTION_MAC), KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT
+        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4         ,KC_5   ,KC_6   ,KC_7  ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
+        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R         ,KC_T   ,KC_Y   ,KC_U  ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
+        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F         ,KC_G   ,KC_H   ,KC_J  ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
+        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V         ,KC_B   ,KC_N   ,KC_M  ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
+        KC_LCTL          ,KC_LALT,KC_LGUI,KC_SPC,TD(TAP_LAYER),KC_LEFT,KC_DOWN,KC_UP ,KC_RIGHT
       ),
 
   /* Function
    * ,-----------------------------------------------------------------------------------------------------------------------.
-   * |REG_GRV|   F1  |   F2  |   F3  |   F4  |   F5  |   F6  |   F7  |   F8  |   F9  |  F10  |  F11  |  F12  |    Reset      |
+   * |       |   F1  |   F2  |   F3  |   F4  |   F5  |   F6  |   F7  |   F8  |   F9  |  F10  |  F11  |  F12  |    Reset      |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |       |       | REG_E |       |       | REG_Y | REG_U | REG_I | REG_O |       |       |       |           |
+   * |           |       |       |       |       |       |       |       |       |       |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |             | REG_A |       |       |       |       |       |       |       |       |REG_TRM|REG_ACU|                 |
+   * |             |       |       |       |       |       |       |       |       |       |       |       |                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|REG_CIR|       |             |       |
+   * |                 |       |       |       |       |       |       |       |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |         |CHANGE_OS|         |                    VOL_TOGGLE                   |       |       | VOL_D | VOL_U |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_FUNCTION] = LAYOUT_60_split_rshift_5x1u(
-      REG_GRV , KC_F1     , KC_F2  , KC_F3         , KC_F4  , KC_F5  , KC_F6            , KC_F7          , KC_F8   , KC_F9   , KC_F10  , KC_F11  , KC_F12 , RESET  ,
-      ______  , ______    , ______ , REG_E         , ______ , ______ , REG_Y            , REG_U          , REG_I   , REG_O   , ______  , ______  , ______ , ______ ,
-      ______  , REG_A     , ______ , ______        , ______ , ______ , ______           , ______         , ______  , ______  , REG_TRM , REG_ACU , ______ ,
-      ______  , ______    , ______ , REG_C         , ______ , ______ , REG_N            , ______         , REG_CED , REG_CIR , ______  , ______  , ______ ,
-      ______  , CHANGE_OS , ______ , KC_AUDIO_MUTE , ______ , ______ , KC_AUDIO_VOL_DOWN, KC_AUDIO_VOL_UP, ______
+        ______ ,KC_F1    ,KC_F2 ,KC_F3   ,KC_F4 ,KC_F5 ,KC_F6      ,KC_F7    ,KC_F8  ,KC_F9  ,KC_F10 ,KC_F11 ,KC_F12,RESET ,
+        ______ ,______   ,______,______  ,______,______,______     ,______   ,______ ,______ ,______ ,______ ,______,______,
+        ______ ,______   ,______,______  ,______,______,______     ,______   ,______ ,______ ,______ ,______ ,______,
+        ______ ,______   ,______,______  ,______,______,______     ,______   ,______ ,______ ,______ ,______ ,______,
+        ______ ,CHANGE_OS,______,KC__MUTE,______,______,KC__VOLDOWN,KC__VOLUP,______
       ),
 
-  /* Function Mac
+  /* Accent Layer
    * ,-----------------------------------------------------------------------------------------------------------------------.
-   * |REG_GRV|   F1  |   F2  |   F3  |   F4  |   F5  |   F6  |   F7  |   F8  |   F9  |  F10  |  F11  |  F12  |    Reset      |
+   * |REG_GRV|       |       |       |       |       |REG_CIR|       |       |       |       |       |       |               |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |           |       |       | REG_E |       |       | REG_Y | REG_U | REG_I | REG_O |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |             | REG_A |       |       |       |       |       |       |       |       |REG_TRM|REG_ACU|                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|REG_CIR|       |             |       |
+   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |         |CHANGE_OS|         |                    VOL_TOGGLE                   |       |       | VOL_D | VOL_U |       |
+   * |         |         |         |                                                 |       |       |       |       |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
-  [_FUNCTION_MAC] = LAYOUT_60_split_rshift_5x1u(
-      REG_GRV , KC_F1     , KC_F2  , KC_F3    , KC_F4  , KC_F5  , KC_F6      , KC_F7    , KC_F8   , KC_F9   , KC_F10  , KC_F11  , KC_F12 , RESET  ,
-      ______  , ______    , ______ , REG_E    , ______ , ______ , REG_Y      , REG_U    , REG_I   , REG_O   , ______  , ______  , ______ , ______ ,
-      ______  , REG_A     , ______ , ______   , ______ , ______ , ______     , ______   , ______  , ______  , REG_TRM , REG_ACU , ______ ,
-      ______  , ______    , ______ , REG_C    , ______ , ______ , REG_N      , ______   , REG_CED , REG_CIR , ______  , ______  , ______ ,
-      ______  , CHANGE_OS , ______ , KC__MUTE , ______ , ______ , KC__VOLDOWN, KC__VOLUP, ______
-      )
+  [_ACCENT] = LAYOUT_60_split_rshift_5x1u(
+        REG_GRV,______,______,______,______,______,REG_CIR,______,______ ,______,______ ,______ ,______,______,
+        ______ ,______,______,REG_E ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______ ,______,______,
+        ______ ,REG_A ,______,______,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU,______,
+        ______ ,______,______,REG_C ,______,______,REG_N  ,______,REG_CED,______,______ ,______ ,______,
+        ______ ,______,______,______,______,______,______ ,______,______
+      ),
+};
+
+
+// Tap Dance
+void x_reset (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    layer_off(_FUNCTION);
+  } else {
+    layer_off(_ACCENT);
+    ALT_LETTER = '\0';
+    ALT_MOD = -1;
+  }
+}
+
+void x_finished (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    layer_on(_FUNCTION);
+  } else {
+    layer_on(_ACCENT);
+  }
+}
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TAP_LAYER]     = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL,x_finished, x_reset, 150)
 };
