@@ -24,12 +24,15 @@ enum custom_keycodes {
   REG_I,
   REG_O,
   REG_U,
+  REG_Y,
   REG_C,
+  REG_N,
   REG_GRV,
   REG_ACU,
   REG_CED,
   REG_TRM,
   REG_CIR,
+  REG_TIL,
 };
 
 void go_to_mode(void) {
@@ -57,82 +60,76 @@ int ALT_MOD = -1;
 
 void check_accent(void) {
   if (ALT_LETTER != '\0' && ALT_MOD != -1) {
-    switch (ALT_LETTER) {
-      case 'a':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00E2"); break;
-          case REG_GRV: send_unicode_hex_string("00E0"); break;
-        }
-        break;
-      case 'e':
-        switch (ALT_MOD) {
-          case REG_ACU: send_unicode_hex_string("00E9"); break;
-          case REG_CIR: send_unicode_hex_string("00EA"); break;
-          case REG_GRV: send_unicode_hex_string("00E8"); break;
-          case REG_TRM: send_unicode_hex_string("00EB"); break;
-        }
-        break;
-      case 'i':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00EE"); break;
-          case REG_TRM: send_unicode_hex_string("00EF"); break;
-        }
-        break;
-      case 'o':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00F4"); break;
-        }
-        break;
-      case 'u':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00FB"); break;
-          case REG_GRV: send_unicode_hex_string("00F9"); break;
-          case REG_TRM: send_unicode_hex_string("00FC"); break;
-        }
-        break;
-      case 'c':
-        switch (ALT_MOD) {
-          case REG_CED: send_unicode_hex_string("00E7"); break;
-        }
-        break;
-      case 'A':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00C2"); break;
-          case REG_GRV: send_unicode_hex_string("00C0"); break;
-        }
-        break;
-      case 'E':
-        switch (ALT_MOD) {
-          case REG_ACU: send_unicode_hex_string("00C9"); break;
-          case REG_CIR: send_unicode_hex_string("00CA"); break;
-          case REG_GRV: send_unicode_hex_string("00C8"); break;
-          case REG_TRM: send_unicode_hex_string("00CB"); break;
-        }
-        break;
-      case 'I':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00CE"); break;
-          case REG_TRM: send_unicode_hex_string("00CF"); break;
-        }
-        break;
-      case 'O':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00D4"); break;
-        }
-        break;
-      case 'U':
-        switch (ALT_MOD) {
-          case REG_CIR: send_unicode_hex_string("00DB"); break;
-          case REG_GRV: send_unicode_hex_string("00D9"); break;
-          case REG_TRM: send_unicode_hex_string("00DC"); break;
-        }
-        break;
-      case 'C':
-        switch (ALT_MOD) {
-          case REG_CED: send_unicode_hex_string("00C7"); break;
-        }
-        break;
+    char name[6];
+    name[0] = ALT_LETTER;
+    name[1] = '\0';
+    if (ALT_MOD == REG_GRV) {
+      strcat(name, "_GRV");
+    } else if (ALT_MOD == REG_ACU) {
+      strcat(name, "_ACU");
+    } else if (ALT_MOD == REG_CED) {
+      strcat(name, "_CED");
+    } else if (ALT_MOD == REG_TRM) {
+      strcat(name, "_TRM");
+    } else if (ALT_MOD == REG_CIR) {
+      strcat(name, "_CIR");
+    } else if (ALT_MOD == REG_TIL) {
+      strcat(name, "_TIL");
     }
+
+    // Lowercase
+    if (strcmp(name, "a_GRV") == 0) { send_unicode_hex_string("00E0"); }
+    else if (strcmp(name, "a_ACU") == 0) { send_unicode_hex_string("00E1"); }
+    else if (strcmp(name, "a_CIR") == 0) { send_unicode_hex_string("00E2"); }
+    else if (strcmp(name, "a_TIL") == 0) { send_unicode_hex_string("00E3"); }
+    else if (strcmp(name, "a_TRM") == 0) { send_unicode_hex_string("00E4"); }
+    else if (strcmp(name, "e_GRV") == 0) { send_unicode_hex_string("00E8"); }
+    else if (strcmp(name, "e_ACU") == 0) { send_unicode_hex_string("00E9"); }
+    else if (strcmp(name, "e_CIR") == 0) { send_unicode_hex_string("00EA"); }
+    else if (strcmp(name, "e_TRM") == 0) { send_unicode_hex_string("00EB"); }
+    else if (strcmp(name, "i_GRV") == 0) { send_unicode_hex_string("00EC"); }
+    else if (strcmp(name, "i_ACU") == 0) { send_unicode_hex_string("00ED"); }
+    else if (strcmp(name, "i_CIR") == 0) { send_unicode_hex_string("00EE"); }
+    else if (strcmp(name, "i_TRM") == 0) { send_unicode_hex_string("00EF"); }
+    else if (strcmp(name, "o_GRV") == 0) { send_unicode_hex_string("00F2"); }
+    else if (strcmp(name, "o_ACU") == 0) { send_unicode_hex_string("00F3"); }
+    else if (strcmp(name, "o_CIR") == 0) { send_unicode_hex_string("00F4"); }
+    else if (strcmp(name, "o_TIL") == 0) { send_unicode_hex_string("00F5"); }
+    else if (strcmp(name, "o_TRM") == 0) { send_unicode_hex_string("00F6"); }
+    else if (strcmp(name, "u_GRV") == 0) { send_unicode_hex_string("00F9"); }
+    else if (strcmp(name, "u_ACU") == 0) { send_unicode_hex_string("00FA"); }
+    else if (strcmp(name, "u_CIR") == 0) { send_unicode_hex_string("00FB"); }
+    else if (strcmp(name, "u_TRM") == 0) { send_unicode_hex_string("00FC"); }
+    else if (strcmp(name, "y_ACU") == 0) { send_unicode_hex_string("00FD"); }
+    else if (strcmp(name, "c_CED") == 0) { send_unicode_hex_string("00E7"); }
+    else if (strcmp(name, "n_TIL") == 0) { send_unicode_hex_string("00F1"); }
+    // Uppercase
+    else if (strcmp(name, "A_GRV") == 0) { send_unicode_hex_string("00C0"); }
+    else if (strcmp(name, "A_ACU") == 0) { send_unicode_hex_string("00C1"); }
+    else if (strcmp(name, "A_CIR") == 0) { send_unicode_hex_string("00C2"); }
+    else if (strcmp(name, "A_TIL") == 0) { send_unicode_hex_string("00C3"); }
+    else if (strcmp(name, "A_TRM") == 0) { send_unicode_hex_string("00C4"); }
+    else if (strcmp(name, "E_GRV") == 0) { send_unicode_hex_string("00C8"); }
+    else if (strcmp(name, "E_ACU") == 0) { send_unicode_hex_string("00C9"); }
+    else if (strcmp(name, "E_CIR") == 0) { send_unicode_hex_string("00CA"); }
+    else if (strcmp(name, "E_TRM") == 0) { send_unicode_hex_string("00CB"); }
+    else if (strcmp(name, "I_GRV") == 0) { send_unicode_hex_string("00CC"); }
+    else if (strcmp(name, "I_ACU") == 0) { send_unicode_hex_string("00CD"); }
+    else if (strcmp(name, "I_CIR") == 0) { send_unicode_hex_string("00CE"); }
+    else if (strcmp(name, "I_TRM") == 0) { send_unicode_hex_string("00CF"); }
+    else if (strcmp(name, "O_GRV") == 0) { send_unicode_hex_string("00D2"); }
+    else if (strcmp(name, "O_ACU") == 0) { send_unicode_hex_string("00D3"); }
+    else if (strcmp(name, "O_CIR") == 0) { send_unicode_hex_string("00D4"); }
+    else if (strcmp(name, "O_TIL") == 0) { send_unicode_hex_string("00D5"); }
+    else if (strcmp(name, "O_TRM") == 0) { send_unicode_hex_string("00D6"); }
+    else if (strcmp(name, "U_GRV") == 0) { send_unicode_hex_string("00D9"); }
+    else if (strcmp(name, "U_ACU") == 0) { send_unicode_hex_string("00DA"); }
+    else if (strcmp(name, "U_CIR") == 0) { send_unicode_hex_string("00DB"); }
+    else if (strcmp(name, "U_TRM") == 0) { send_unicode_hex_string("00DC"); }
+    else if (strcmp(name, "Y_ACU") == 0) { send_unicode_hex_string("00DD"); }
+    else if (strcmp(name, "C_CED") == 0) { send_unicode_hex_string("00E7"); }
+    else if (strcmp(name, "N_TIL") == 0) { send_unicode_hex_string("00D1"); }
+
     ALT_LETTER = '\0';
     ALT_MOD = -1;
   }
@@ -148,7 +145,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case REG_GRV:
       if(record->event.pressed) {
-        ALT_MOD = REG_GRV;
+        ALT_MOD = shift_pressed ? REG_TIL : REG_GRV;
         check_accent();
       }
       return false;
@@ -173,6 +170,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case REG_CIR:
       if(record->event.pressed) {
         ALT_MOD = REG_CIR;
+        check_accent();
+      }
+      return false;
+    case REG_TIL:
+      if(record->event.pressed) {
+        ALT_MOD = REG_TIL;
         check_accent();
       }
       return false;
@@ -206,9 +209,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         check_accent();
       }
       return false;
+    case REG_Y:
+      if (record->event.pressed) {
+        ALT_LETTER = shift_pressed ? 'Y' : 'y';
+        check_accent();
+      }
+      return false;
     case REG_C:
       if (record->event.pressed) {
         ALT_LETTER = shift_pressed ? 'C' : 'c';
+        check_accent();
+      }
+      return false;
+    case REG_N:
+      if (record->event.pressed) {
+        ALT_LETTER = shift_pressed ? 'N' : 'n';
         check_accent();
       }
       return false;
@@ -271,11 +286,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ,-----------------------------------------------------------------------------------------------------------------------.
    * |REG_GRV|   F1  |   F2  |   F3  |   F4  |   F5  |   F6  |   F7  |   F8  |   F9  |  F10  |  F11  |  F12  |    Reset      |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |       |       | REG_E |       |       |       | REG_U | REG_I | REG_O |       |       |       |           |
+   * |           |       |       | REG_E |       |       | REG_Y | REG_U | REG_I | REG_O |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |             | REG_A |       |       |       |       |       |       |       |       |REG_TRM|REG_ACU|                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |       |       | REG_C |       |       |       |       |REG_CED|REG_CIR|       |             |       |
+   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|REG_CIR|       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |         |CHANGE_OS|         |                    VOL_TOGGLE                   |       |       | VOL_D | VOL_U |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
@@ -283,9 +298,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_FUNCTION] = LAYOUT_60_split_rshift_5x1u(
       REG_GRV , KC_F1     , KC_F2  , KC_F3         , KC_F4  , KC_F5  , KC_F6            , KC_F7          , KC_F8   , KC_F9   , KC_F10  , KC_F11  , KC_F12 , RESET  ,
-      ______  , ______    , ______ , REG_E         , ______ , ______ , ______           , REG_U          , REG_I   , REG_O   , ______  , ______  , ______ , ______ ,
+      ______  , ______    , ______ , REG_E         , ______ , ______ , REG_Y            , REG_U          , REG_I   , REG_O   , ______  , ______  , ______ , ______ ,
       ______  , REG_A     , ______ , ______        , ______ , ______ , ______           , ______         , ______  , ______  , REG_TRM , REG_ACU , ______ ,
-      ______  , ______    , ______ , REG_C         , ______ , ______ , ______           , ______         , REG_CED , REG_CIR , ______  , ______  , ______ ,
+      ______  , ______    , ______ , REG_C         , ______ , ______ , REG_N            , ______         , REG_CED , REG_CIR , ______  , ______  , ______ ,
       ______  , CHANGE_OS , ______ , KC_AUDIO_MUTE , ______ , ______ , KC_AUDIO_VOL_DOWN, KC_AUDIO_VOL_UP, ______
       ),
 
@@ -293,11 +308,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ,-----------------------------------------------------------------------------------------------------------------------.
    * |REG_GRV|   F1  |   F2  |   F3  |   F4  |   F5  |   F6  |   F7  |   F8  |   F9  |  F10  |  F11  |  F12  |    Reset      |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |       |       | REG_E |       |       |       | REG_U | REG_I | REG_O |       |       |       |           |
+   * |           |       |       | REG_E |       |       | REG_Y | REG_U | REG_I | REG_O |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |             | REG_A |       |       |       |       |       |       |       |       |REG_TRM|REG_ACU|                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |       |       | REG_C |       |       |       |       |REG_CED|REG_CIR|       |             |       |
+   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|REG_CIR|       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |         |CHANGE_OS|         |                    VOL_TOGGLE                   |       |       | VOL_D | VOL_U |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
@@ -305,9 +320,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_FUNCTION_MAC] = LAYOUT_60_split_rshift_5x1u(
       REG_GRV , KC_F1     , KC_F2  , KC_F3    , KC_F4  , KC_F5  , KC_F6      , KC_F7    , KC_F8   , KC_F9   , KC_F10  , KC_F11  , KC_F12 , RESET  ,
-      ______  , ______    , ______ , REG_E    , ______ , ______ , ______     , REG_U    , REG_I   , REG_O   , ______  , ______  , ______ , ______ ,
+      ______  , ______    , ______ , REG_E    , ______ , ______ , REG_Y      , REG_U    , REG_I   , REG_O   , ______  , ______  , ______ , ______ ,
       ______  , REG_A     , ______ , ______   , ______ , ______ , ______     , ______   , ______  , ______  , REG_TRM , REG_ACU , ______ ,
-      ______  , ______    , ______ , REG_C    , ______ , ______ , ______     , ______   , REG_CED , REG_CIR , ______  , ______  , ______ ,
+      ______  , ______    , ______ , REG_C    , ______ , ______ , REG_N      , ______   , REG_CED , REG_CIR , ______  , ______  , ______ ,
       ______  , CHANGE_OS , ______ , KC__MUTE , ______ , ______ , KC__VOLDOWN, KC__VOLUP, ______
       )
 };
