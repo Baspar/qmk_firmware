@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include QMK_KEYBOARD_H
 
 typedef union {
@@ -60,8 +59,6 @@ void keyboard_post_init_user(void) {
 
 char ALT_LETTER = '\0';
 int ALT_MOD = -1;
-
-/* send_unicode_hex_string("00E9"); */
 
 void check_accent(void) {
   if (ALT_LETTER != '\0' && ALT_MOD != -1) {
