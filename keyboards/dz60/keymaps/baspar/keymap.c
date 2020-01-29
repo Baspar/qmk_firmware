@@ -350,5 +350,5 @@ void x_finished (qk_tap_dance_state_t *state, void *user_data) {
 }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [TAP_LAYER]     = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL,x_finished, x_reset, 150)
+  [TAP_LAYER]     = ACTION_TAP_DANCE_FN_ADVANCED(NULL,x_finished, x_reset)
 };
