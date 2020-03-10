@@ -15,6 +15,12 @@ enum {
   TAP_LAYER
 };
 
+// Macro
+#define CONVERT_TO_UNICODE_(symbol, unicode) if (strcmp(name,symbol) == 0) { send_unicode_hex_string(unicode); }
+#define CONVERT_TO_UNICODE(symbol, unicode) else if (strcmp(name,symbol) == 0) { send_unicode_hex_string(unicode); }
+#define REGISTER_LETTER(letter) if (record->event.pressed) { ALT_LETTER = (letter); check_accent(); } return false;
+#define REGISTER_MOD(modifier) if(record->event.pressed) { ALT_MOD = (modifier); check_accent(); } return false;
+
 // Layers
 #define _DEFAULT 0
 #define _DEFAULT_MAC 1
@@ -61,80 +67,88 @@ void keyboard_post_init_user(void) {
   go_to_mode();
 }
 
+// Accent handling
 char ALT_LETTER = '\0';
 int ALT_MOD = -1;
-
 void check_accent(void) {
   if (ALT_LETTER != '\0' && ALT_MOD != -1) {
     char name[6];
     name[0] = ALT_LETTER;
     name[1] = '\0';
-    if (ALT_MOD == REG_GRV) {
-      strcat(name, "_GRV");
-    } else if (ALT_MOD == REG_ACU) {
-      strcat(name, "_ACU");
-    } else if (ALT_MOD == REG_CED) {
-      strcat(name, "_CED");
-    } else if (ALT_MOD == REG_TRM) {
-      strcat(name, "_TRM");
-    } else if (ALT_MOD == REG_CIR) {
-      strcat(name, "_CIR");
-    } else if (ALT_MOD == REG_TIL) {
-      strcat(name, "_TIL");
+
+    switch (ALT_MOD) {
+      case REG_GRV:
+        strcat(name, "_GRV");
+        break;
+      case REG_ACU:
+        strcat(name, "_ACU");
+        break;
+      case REG_CED:
+        strcat(name, "_CED");
+        break;
+      case REG_TRM:
+        strcat(name, "_TRM");
+        break;
+      case REG_CIR:
+        strcat(name, "_CIR");
+        break;
+      case REG_TIL:
+        strcat(name, "_TIL");
+        break;
     }
 
     // Lowercase
-    if (strcmp(name, "a_GRV") == 0) { send_unicode_hex_string("00E0"); }
-    else if (strcmp(name, "a_ACU") == 0) { send_unicode_hex_string("00E1"); }
-    else if (strcmp(name, "a_CIR") == 0) { send_unicode_hex_string("00E2"); }
-    else if (strcmp(name, "a_TIL") == 0) { send_unicode_hex_string("00E3"); }
-    else if (strcmp(name, "a_TRM") == 0) { send_unicode_hex_string("00E4"); }
-    else if (strcmp(name, "e_GRV") == 0) { send_unicode_hex_string("00E8"); }
-    else if (strcmp(name, "e_ACU") == 0) { send_unicode_hex_string("00E9"); }
-    else if (strcmp(name, "e_CIR") == 0) { send_unicode_hex_string("00EA"); }
-    else if (strcmp(name, "e_TRM") == 0) { send_unicode_hex_string("00EB"); }
-    else if (strcmp(name, "i_GRV") == 0) { send_unicode_hex_string("00EC"); }
-    else if (strcmp(name, "i_ACU") == 0) { send_unicode_hex_string("00ED"); }
-    else if (strcmp(name, "i_CIR") == 0) { send_unicode_hex_string("00EE"); }
-    else if (strcmp(name, "i_TRM") == 0) { send_unicode_hex_string("00EF"); }
-    else if (strcmp(name, "o_GRV") == 0) { send_unicode_hex_string("00F2"); }
-    else if (strcmp(name, "o_ACU") == 0) { send_unicode_hex_string("00F3"); }
-    else if (strcmp(name, "o_CIR") == 0) { send_unicode_hex_string("00F4"); }
-    else if (strcmp(name, "o_TIL") == 0) { send_unicode_hex_string("00F5"); }
-    else if (strcmp(name, "o_TRM") == 0) { send_unicode_hex_string("00F6"); }
-    else if (strcmp(name, "u_GRV") == 0) { send_unicode_hex_string("00F9"); }
-    else if (strcmp(name, "u_ACU") == 0) { send_unicode_hex_string("00FA"); }
-    else if (strcmp(name, "u_CIR") == 0) { send_unicode_hex_string("00FB"); }
-    else if (strcmp(name, "u_TRM") == 0) { send_unicode_hex_string("00FC"); }
-    else if (strcmp(name, "y_ACU") == 0) { send_unicode_hex_string("00FD"); }
-    else if (strcmp(name, "c_CED") == 0) { send_unicode_hex_string("00E7"); }
-    else if (strcmp(name, "n_TIL") == 0) { send_unicode_hex_string("00F1"); }
+    CONVERT_TO_UNICODE_("a_GRV", "00E0")
+    CONVERT_TO_UNICODE("a_ACU", "00E1")
+    CONVERT_TO_UNICODE("a_CIR", "00E2")
+    CONVERT_TO_UNICODE("a_TIL", "00E3")
+    CONVERT_TO_UNICODE("a_TRM", "00E4")
+    CONVERT_TO_UNICODE("e_GRV", "00E8")
+    CONVERT_TO_UNICODE("e_ACU", "00E9")
+    CONVERT_TO_UNICODE("e_CIR", "00EA")
+    CONVERT_TO_UNICODE("e_TRM", "00EB")
+    CONVERT_TO_UNICODE("i_GRV", "00EC")
+    CONVERT_TO_UNICODE("i_ACU", "00ED")
+    CONVERT_TO_UNICODE("i_CIR", "00EE")
+    CONVERT_TO_UNICODE("i_TRM", "00EF")
+    CONVERT_TO_UNICODE("o_GRV", "00F2")
+    CONVERT_TO_UNICODE("o_ACU", "00F3")
+    CONVERT_TO_UNICODE("o_CIR", "00F4")
+    CONVERT_TO_UNICODE("o_TIL", "00F5")
+    CONVERT_TO_UNICODE("o_TRM", "00F6")
+    CONVERT_TO_UNICODE("u_GRV", "00F9")
+    CONVERT_TO_UNICODE("u_ACU", "00FA")
+    CONVERT_TO_UNICODE("u_CIR", "00FB")
+    CONVERT_TO_UNICODE("u_TRM", "00FC")
+    CONVERT_TO_UNICODE("y_ACU", "00FD")
+    CONVERT_TO_UNICODE("c_CED", "00E7")
+    CONVERT_TO_UNICODE("n_TIL", "00F1")
     // Uppercase
-    else if (strcmp(name, "A_GRV") == 0) { send_unicode_hex_string("00C0"); }
-    else if (strcmp(name, "A_ACU") == 0) { send_unicode_hex_string("00C1"); }
-    else if (strcmp(name, "A_CIR") == 0) { send_unicode_hex_string("00C2"); }
-    else if (strcmp(name, "A_TIL") == 0) { send_unicode_hex_string("00C3"); }
-    else if (strcmp(name, "A_TRM") == 0) { send_unicode_hex_string("00C4"); }
-    else if (strcmp(name, "E_GRV") == 0) { send_unicode_hex_string("00C8"); }
-    else if (strcmp(name, "E_ACU") == 0) { send_unicode_hex_string("00C9"); }
-    else if (strcmp(name, "E_CIR") == 0) { send_unicode_hex_string("00CA"); }
-    else if (strcmp(name, "E_TRM") == 0) { send_unicode_hex_string("00CB"); }
-    else if (strcmp(name, "I_GRV") == 0) { send_unicode_hex_string("00CC"); }
-    else if (strcmp(name, "I_ACU") == 0) { send_unicode_hex_string("00CD"); }
-    else if (strcmp(name, "I_CIR") == 0) { send_unicode_hex_string("00CE"); }
-    else if (strcmp(name, "I_TRM") == 0) { send_unicode_hex_string("00CF"); }
-    else if (strcmp(name, "O_GRV") == 0) { send_unicode_hex_string("00D2"); }
-    else if (strcmp(name, "O_ACU") == 0) { send_unicode_hex_string("00D3"); }
-    else if (strcmp(name, "O_CIR") == 0) { send_unicode_hex_string("00D4"); }
-    else if (strcmp(name, "O_TIL") == 0) { send_unicode_hex_string("00D5"); }
-    else if (strcmp(name, "O_TRM") == 0) { send_unicode_hex_string("00D6"); }
-    else if (strcmp(name, "U_GRV") == 0) { send_unicode_hex_string("00D9"); }
-    else if (strcmp(name, "U_ACU") == 0) { send_unicode_hex_string("00DA"); }
-    else if (strcmp(name, "U_CIR") == 0) { send_unicode_hex_string("00DB"); }
-    else if (strcmp(name, "U_TRM") == 0) { send_unicode_hex_string("00DC"); }
-    else if (strcmp(name, "Y_ACU") == 0) { send_unicode_hex_string("00DD"); }
-    else if (strcmp(name, "C_CED") == 0) { send_unicode_hex_string("00E7"); }
-    else if (strcmp(name, "N_TIL") == 0) { send_unicode_hex_string("00D1"); }
+    CONVERT_TO_UNICODE("A_GRV", "00C0")
+    CONVERT_TO_UNICODE("A_ACU", "00C1")
+    CONVERT_TO_UNICODE("A_CIR", "00C2")
+    CONVERT_TO_UNICODE("A_TIL", "00C3")
+    CONVERT_TO_UNICODE("A_TRM", "00C4")
+    CONVERT_TO_UNICODE("E_GRV", "00C8")
+    CONVERT_TO_UNICODE("E_ACU", "00C9")
+    CONVERT_TO_UNICODE("E_CIR", "00CA")
+    CONVERT_TO_UNICODE("E_TRM", "00CB")
+    CONVERT_TO_UNICODE("I_GRV", "00CC")
+    CONVERT_TO_UNICODE("I_ACU", "00CD")
+    CONVERT_TO_UNICODE("I_CIR", "00CE")
+    CONVERT_TO_UNICODE("I_TRM", "00CF")
+    CONVERT_TO_UNICODE("O_GRV", "00D2")
+    CONVERT_TO_UNICODE("O_ACU", "00D3")
+    CONVERT_TO_UNICODE("O_CIR", "00D4")
+    CONVERT_TO_UNICODE("O_TIL", "00D5")
+    CONVERT_TO_UNICODE("O_TRM", "00D6")
+    CONVERT_TO_UNICODE("U_GRV", "00D9")
+    CONVERT_TO_UNICODE("U_ACU", "00DA")
+    CONVERT_TO_UNICODE("U_CIR", "00DB")
+    CONVERT_TO_UNICODE("U_TRM", "00DC")
+    CONVERT_TO_UNICODE("Y_ACU", "00DD")
+    CONVERT_TO_UNICODE("C_CED", "00E7")
+    CONVERT_TO_UNICODE("N_TIL", "00D1")
 
     ALT_LETTER = '\0';
     ALT_MOD = -1;
@@ -150,89 +164,33 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
   switch (keycode) {
     case REG_GRV:
-      if(record->event.pressed) {
-        ALT_MOD = shift_pressed ? REG_TIL : REG_GRV;
-        check_accent();
-      }
-      return false;
+      REGISTER_MOD(shift_pressed ? REG_GRV : REG_TIL)
     case REG_ACU:
-      if(record->event.pressed) {
-        ALT_MOD = REG_ACU;
-        check_accent();
-      }
-      return false;
+      REGISTER_MOD(REG_ACU)
     case REG_CED:
-      if(record->event.pressed) {
-        ALT_MOD = shift_pressed ? REG_CIR : REG_CED;
-        check_accent();
-      }
-      return false;
+      REGISTER_MOD(shift_pressed ? REG_CED : REG_CIR)
     case REG_TRM:
-      if(record->event.pressed) {
-        ALT_MOD = REG_TRM;
-        check_accent();
-      }
-      return false;
+      REGISTER_MOD(REG_TRM)
     case REG_CIR:
-      if(record->event.pressed) {
-        ALT_MOD = REG_CIR;
-        check_accent();
-      }
-      return false;
+      REGISTER_MOD(REG_CIR)
     case REG_TIL:
-      if(record->event.pressed) {
-        ALT_MOD = REG_TIL;
-        check_accent();
-      }
-      return false;
+      REGISTER_MOD(REG_TIL)
     case REG_A:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'A' : 'a';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'A' : 'a');
     case REG_E:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'E' : 'e';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'E' : 'e');
     case REG_I:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'I' : 'i';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'I' : 'i');
     case REG_O:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'O' : 'o';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'O' : 'o');
     case REG_U:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'U' : 'u';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'U' : 'u');
     case REG_Y:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'Y' : 'y';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'Y' : 'y');
     case REG_C:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'C' : 'c';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'C' : 'c');
     case REG_N:
-      if (record->event.pressed) {
-        ALT_LETTER = shift_pressed ? 'N' : 'n';
-        check_accent();
-      }
-      return false;
+      REGISTER_LETTER(shift_pressed ? 'N' : 'n');
     case CHANGE_OS:
       if (!record->event.pressed) {
         change_OS();
