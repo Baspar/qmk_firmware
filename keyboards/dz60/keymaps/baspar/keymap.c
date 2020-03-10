@@ -4,6 +4,8 @@ typedef union {
   uint32_t raw;
   struct {
     bool use_mac :1;
+    uint8_t color_mac :8;
+    uint8_t color_unix :8;
   };
 } user_config_t;
 user_config_t user_config;
@@ -37,6 +39,8 @@ enum custom_keycodes {
   REG_TRM,
   REG_CIR,
   REG_TIL,
+  DEC_COL,
+  INC_COL
 };
 
 void go_to_mode(void) {
@@ -299,10 +303,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_FUNCTION] = LAYOUT_60_split_rshift_5x1u(
-        ______ ,KC_F1    ,KC_F2 ,KC_F3   ,KC_F4 ,KC_F5  ,KC_F6    ,KC_F7       ,KC_F8     ,KC_F9  ,KC_F10 ,KC_F11 ,KC_F12,RESET ,
-        ______ ,______   ,______,______  ,______,______ ,______   ,______      ,______    ,______ ,______ ,______ ,______,______,
-        ______ ,______   ,______,______  ,______,______ ,______   ,KC__VOLDOWN ,KC__VOLUP ,______ ,______ ,______ ,______,
-        ______ ,______   ,______,______  ,______,______ ,______   ,______      ,______    ,______ ,______ ,______ ,______,
+        ______ ,KC_F1    ,KC_F2 ,KC_F3   ,KC_F4 ,KC_F5  ,KC_F6    ,KC_F7       ,KC_F8     ,KC_F9  ,KC_F10 ,KC_F11  ,KC_F12 ,RESET ,
+        ______ ,______   ,______,______  ,______,______ ,______   ,______      ,______    ,______ ,______ ,DEC_COL ,INC_COL,______,
+        ______ ,______   ,______,______  ,______,______ ,______   ,KC__VOLDOWN ,KC__VOLUP ,______ ,______ ,______  ,______ ,
+        ______ ,______   ,______,______  ,______,______ ,______   ,______      ,______    ,______ ,______ ,______  ,______ ,
         ______ ,CHANGE_OS,______,KC__MUTE,______,KC_HOME,KC_PGDOWN,KC_PGUP     ,KC_END
       ),
 
