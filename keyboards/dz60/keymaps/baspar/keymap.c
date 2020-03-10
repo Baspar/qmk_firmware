@@ -4,8 +4,8 @@ typedef union {
   uint32_t raw;
   struct {
     bool use_mac :1;
-    uint8_t color_mac :8;
-    uint8_t color_unix :8;
+    uint8_t colors :8;
+    uint8_t brightnesss :8;
   };
 } user_config_t;
 user_config_t user_config;
@@ -48,24 +48,6 @@ enum custom_keycodes {
   DEC_COL,
   INC_COL
 };
-
-void go_to_mode(void) {
-  if (user_config.use_mac) {
-    set_unicode_input_mode(UC_OSX);
-    rgblight_sethsv_noeeprom_magenta();
-  } else {
-    set_unicode_input_mode(UC_LNX);
-    rgblight_sethsv_noeeprom_cyan();
-  }
-}
-
-// Init
-void keyboard_post_init_user(void) {
-  user_config.raw = eeconfig_read_user();
-  rgblight_enable();
-  rgblight_mode(1);
-  go_to_mode();
-}
 
 // Accent handling
 char ALT_LETTER = '\0';
@@ -154,15 +136,99 @@ void check_accent(void) {
     ALT_MOD = -1;
   }
 }
-void change_OS (void) {
+
+// OS handling
+void go_to_mode(void) {
+  if (user_config.use_mac) {
+    set_unicode_input_mode(UC_OSX);
+    /* rgblight_sethsv_noeeprom_magenta(); */
+  } else {
+    set_unicode_input_mode(UC_LNX);
+    /* rgblight_sethsv_noeeprom_cyan(); */
+  }
+}
+void change_OS(void) {
   user_config.use_mac = !user_config.use_mac;
   set_single_persistent_default_layer(user_config.use_mac);
   go_to_mode();
   eeconfig_update_user(user_config.raw);
 }
+
+// Backlight handling
+void update_backlight(void) {
+  bool use_mac = user_config.use_mac;
+  int color_mac = user_config.colors & 0x15;
+  int color_unix = (user_config.colors >> 4) & 0x15;
+  int brightness_mac = user_config.brightnesss & 0x15;
+  int brightness_unix = (user_config.brightnesss >> 4) & 0x15;
+  rgblight_sethsv_noeeprom(
+      (use_mac ? color_mac : color_unix) * 16 + 1,
+      255,
+      (use_mac ? brightness_mac : brightness_unix) * 16 + 1
+    );
+}
+void change_brightness(int delta) {
+  bool use_mac = user_config.use_mac;
+
+  int brightness_mac = user_config.brightnesss & 0x15;
+  int brightness_unix = (user_config.brightnesss >> 4) & 0x15;
+
+  if (use_mac) {
+    brightness_mac += 1;
+    brightness_mac %= 16;
+  } else {
+    brightness_unix += 1;
+    brightness_unix %= 16;
+  }
+
+  user_config.brightnesss = (brightness_unix << 4) + brightness_mac;
+
+  update_backlight();
+  eeconfig_update_user(user_config.raw);
+}
+void change_hue(int delta) {
+  bool use_mac = user_config.use_mac;
+
+  int color_mac = user_config.colors & 0x15;
+  int color_unix = (user_config.colors >> 4) & 0x15;
+
+  if (use_mac) {
+    color_mac += 1;
+    color_mac %= 16;
+  } else {
+    color_unix += 1;
+    color_unix %= 16;
+  }
+
+  user_config.colors = (color_unix << 4) + color_mac;
+
+  update_backlight();
+  eeconfig_update_user(user_config.raw);
+}
+
+// Init
+void keyboard_post_init_user(void) {
+  user_config.raw = eeconfig_read_user();
+  rgblight_enable();
+  rgblight_mode(1);
+  go_to_mode();
+  update_backlight();
+}
+
+// Main Loop
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
   switch (keycode) {
+    case DEC_COL:
+      if (!record->event.pressed) {
+        if (shift_pressed) { change_brightness(-1); } else { change_hue(-1); }
+        return false;
+      }
+    case INC_COL:
+      if (!record->event.pressed) {
+        if (shift_pressed) { change_brightness(1); } else { change_hue(1); }
+        return false;
+      }
     case REG_GRV:
       REGISTER_MOD(shift_pressed ? REG_GRV : REG_TIL)
     case REG_ACU:
@@ -201,6 +267,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
 }
 
+// Keymap
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /* Default
    * ,-----------------------------------------------------------------------------------------------------------------------.
@@ -250,7 +317,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ,-----------------------------------------------------------------------------------------------------------------------.
    * |       |   F1  |   F2  |   F3  |   F4  |   F5  |   F6  |   F7  |   F8  |   F9  |  F10  |  F11  |  F12  |    Reset      |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |       |       |       |       |       |       |       |       |       |       |       |       |           |
+   * |           |       |       |       |       |       |       |       |       |       |       |DEC_COL|INC_COL|           |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |             |       |       |       |       |       |       |VOL_DWN|VOL_UP |       |       |       |                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
@@ -290,7 +357,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ______ ,______,______,______,______,______,______ ,______,______
       ),
 };
-
 
 // Tap Dance
 void x_reset (qk_tap_dance_state_t *state, void *user_data) {
