@@ -5,7 +5,7 @@ typedef union {
   struct {
     bool use_mac :1;
     uint8_t colors :8;
-    uint8_t brightnesss :8;
+    uint8_t brightnesses :8;
   };
 } user_config_t;
 user_config_t user_config;
@@ -159,8 +159,8 @@ void update_backlight(void) {
   bool use_mac = user_config.use_mac;
   int color_mac = user_config.colors & 0x15;
   int color_unix = (user_config.colors >> 4) & 0x15;
-  int brightness_mac = user_config.brightnesss & 0x15;
-  int brightness_unix = (user_config.brightnesss >> 4) & 0x15;
+  int brightness_mac = user_config.brightnesses & 0x15;
+  int brightness_unix = (user_config.brightnesses >> 4) & 0x15;
   rgblight_sethsv_noeeprom(
       (use_mac ? color_mac : color_unix) * 16 + 1,
       255,
@@ -170,8 +170,8 @@ void update_backlight(void) {
 void change_brightness(int delta) {
   bool use_mac = user_config.use_mac;
 
-  int brightness_mac = user_config.brightnesss & 0x15;
-  int brightness_unix = (user_config.brightnesss >> 4) & 0x15;
+  int brightness_mac = user_config.brightnesses & 0x15;
+  int brightness_unix = (user_config.brightnesses >> 4) & 0x15;
 
   if (use_mac) {
     brightness_mac += 1;
@@ -181,7 +181,7 @@ void change_brightness(int delta) {
     brightness_unix %= 16;
   }
 
-  user_config.brightnesss = (brightness_unix << 4) + brightness_mac;
+  user_config.brightnesses = (brightness_unix << 4) + brightness_mac;
 
   update_backlight();
   eeconfig_update_user(user_config.raw);
