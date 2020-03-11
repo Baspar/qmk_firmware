@@ -4,7 +4,7 @@ typedef union {
   uint32_t raw;
   struct {
     bool use_mac :1;
-    uint8_t colors :8;
+    uint8_t hues :8;
     uint8_t brightnesses :8;
   };
 } user_config_t;
@@ -28,7 +28,6 @@ enum {
 #define _ACCENT 3
 
 // Custom keycodes
-#define ______ KC_TRNS
 enum custom_keycodes {
   CHANGE_OS = SAFE_RANGE,
   REG_A,
@@ -155,16 +154,18 @@ void change_OS(void) {
 }
 
 // Backlight handling
+#define SHIFT_HUE 15
+#define SHIFT_BRIGHTNESS 15
 void update_backlight(void) {
   bool use_mac = user_config.use_mac;
-  int color_mac = user_config.colors & 0x15;
-  int color_unix = (user_config.colors >> 4) & 0x15;
+  int hue_mac = user_config.hues & 0x15;
+  int hue_unix = (user_config.hues >> 4) & 0x15;
   int brightness_mac = user_config.brightnesses & 0x15;
   int brightness_unix = (user_config.brightnesses >> 4) & 0x15;
   rgblight_sethsv_noeeprom(
-      (use_mac ? color_mac : color_unix) * 16 + 1,
+      (use_mac ? hue_mac : hue_unix) * 16 + SHIFT_HUE,
       255,
-      (use_mac ? brightness_mac : brightness_unix) * 16 + 1
+      (use_mac ? brightness_mac : brightness_unix) * 16 + SHIFT_BRIGHTNESS
     );
 }
 void change_brightness(int delta) {
@@ -189,18 +190,18 @@ void change_brightness(int delta) {
 void change_hue(int delta) {
   bool use_mac = user_config.use_mac;
 
-  int color_mac = user_config.colors & 0x15;
-  int color_unix = (user_config.colors >> 4) & 0x15;
+  int hue_mac = user_config.hues & 0x15;
+  int hue_unix = (user_config.hues >> 4) & 0x15;
 
   if (use_mac) {
-    color_mac += 1;
-    color_mac %= 16;
+    hue_mac += 1;
+    hue_mac %= 16;
   } else {
-    color_unix += 1;
-    color_unix %= 16;
+    hue_unix += 1;
+    hue_unix %= 16;
   }
 
-  user_config.colors = (color_unix << 4) + color_mac;
+  user_config.hues = (hue_unix << 4) + hue_mac;
 
   update_backlight();
   eeconfig_update_user(user_config.raw);
@@ -268,6 +269,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 // Keymap
+#define ______ KC_TRNS
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /* Default
    * ,-----------------------------------------------------------------------------------------------------------------------.
