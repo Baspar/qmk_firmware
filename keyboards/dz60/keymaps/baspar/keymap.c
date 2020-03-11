@@ -16,6 +16,8 @@ enum {
 };
 
 // Macro
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define CONVERT_TO_UNICODE_(symbol, unicode) if (strcmp(name,symbol) == 0) { send_unicode_hex_string(unicode); }
 #define CONVERT_TO_UNICODE(symbol, unicode) else if (strcmp(name,symbol) == 0) { send_unicode_hex_string(unicode); }
 #define REGISTER_LETTER(letter) if (record->event.pressed) { ALT_LETTER = (letter); check_accent(); } return false;
@@ -175,11 +177,9 @@ void change_brightness(int delta) {
   int brightness_unix = (user_config.brightnesses >> 4) & 0x15;
 
   if (use_mac) {
-    brightness_mac += 1;
-    brightness_mac %= 16;
+    brightness_mac = MIN(15, MAX(0, brightness_mac + delta));
   } else {
-    brightness_unix += 1;
-    brightness_unix %= 16;
+    brightness_unix = MIN(15, MAX(0, brightness_unix + delta));
   }
 
   user_config.brightnesses = (brightness_unix << 4) + brightness_mac;
@@ -194,11 +194,9 @@ void change_hue(int delta) {
   int hue_unix = (user_config.hues >> 4) & 0x15;
 
   if (use_mac) {
-    hue_mac += 1;
-    hue_mac %= 16;
+    hue_mac = MIN(15, MAX(0, hue_mac + delta));
   } else {
-    hue_unix += 1;
-    hue_unix %= 16;
+    hue_unix = MIN(15, MAX(0, hue_unix + delta));
   }
 
   user_config.hues = (hue_unix << 4) + hue_mac;
