@@ -190,6 +190,14 @@ void change_hue(int delta) {
   eeconfig_update_user(user_config.raw);
 }
 
+// Idle keyboard
+void suspend_power_down_user(void) {
+  rgblight_enable_noeeprom();
+}
+void suspend_wakeup_init_user(void) {
+  rgblight_enable_noeeprom();
+}
+
 // OS handling
 void go_to_mode(void) {
   if (user_config.use_mac) {
