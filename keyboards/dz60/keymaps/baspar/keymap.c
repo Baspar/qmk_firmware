@@ -143,10 +143,10 @@ void check_accent(void) {
 #define SHIFT_BRIGHTNESS 15
 void update_backlight(void) {
   bool use_mac = user_config.use_mac;
-  int hue_mac = user_config.hues & 0x15;
-  int hue_unix = (user_config.hues >> 4) & 0x15;
-  int brightness_mac = user_config.brightnesses & 0x15;
-  int brightness_unix = (user_config.brightnesses >> 4) & 0x15;
+  int hue_mac = user_config.hues % 16;
+  int hue_unix = user_config.hues / 16;
+  int brightness_mac = user_config.brightnesses % 16;
+  int brightness_unix = user_config.brightnesses / 16;
   rgblight_sethsv_noeeprom(
       (use_mac ? hue_mac : hue_unix) * 16 + SHIFT_HUE,
       255,
@@ -156,8 +156,8 @@ void update_backlight(void) {
 void change_brightness(int delta) {
   bool use_mac = user_config.use_mac;
 
-  int brightness_mac = user_config.brightnesses & 0x15;
-  int brightness_unix = (user_config.brightnesses >> 4) & 0x15;
+  int brightness_mac = user_config.brightnesses % 16;
+  int brightness_unix = user_config.brightnesses / 16;
 
   if (use_mac) {
     brightness_mac = MIN(15, MAX(0, brightness_mac + delta));
@@ -165,7 +165,7 @@ void change_brightness(int delta) {
     brightness_unix = MIN(15, MAX(0, brightness_unix + delta));
   }
 
-  user_config.brightnesses = (brightness_unix << 4) + brightness_mac;
+  user_config.brightnesses = (brightness_unix * 16) + brightness_mac;
 
   update_backlight();
   eeconfig_update_user(user_config.raw);
@@ -173,8 +173,8 @@ void change_brightness(int delta) {
 void change_hue(int delta) {
   bool use_mac = user_config.use_mac;
 
-  int hue_mac = user_config.hues & 0x15;
-  int hue_unix = (user_config.hues >> 4) & 0x15;
+  int hue_mac = user_config.hues % 16;
+  int hue_unix = user_config.hues / 16;
 
   if (use_mac) {
     hue_mac = MIN(15, MAX(0, hue_mac + delta));
@@ -182,7 +182,7 @@ void change_hue(int delta) {
     hue_unix = MIN(15, MAX(0, hue_unix + delta));
   }
 
-  user_config.hues = (hue_unix << 4) + hue_mac;
+  user_config.hues = hue_unix * 16 + hue_mac;
 
   update_backlight();
   eeconfig_update_user(user_config.raw);
