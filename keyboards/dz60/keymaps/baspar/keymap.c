@@ -138,23 +138,6 @@ void check_accent(void) {
   }
 }
 
-// OS handling
-void go_to_mode(void) {
-  if (user_config.use_mac) {
-    set_unicode_input_mode(UC_OSX);
-    /* rgblight_sethsv_noeeprom_magenta(); */
-  } else {
-    set_unicode_input_mode(UC_LNX);
-    /* rgblight_sethsv_noeeprom_cyan(); */
-  }
-}
-void change_OS(void) {
-  user_config.use_mac = !user_config.use_mac;
-  set_single_persistent_default_layer(user_config.use_mac);
-  go_to_mode();
-  eeconfig_update_user(user_config.raw);
-}
-
 // Backlight handling
 #define SHIFT_HUE 15
 #define SHIFT_BRIGHTNESS 15
@@ -205,13 +188,30 @@ void change_hue(int delta) {
   eeconfig_update_user(user_config.raw);
 }
 
+// OS handling
+void go_to_mode(void) {
+  if (user_config.use_mac) {
+    set_unicode_input_mode(UC_OSX);
+    /* rgblight_sethsv_noeeprom_magenta(); */
+  } else {
+    set_unicode_input_mode(UC_LNX);
+    /* rgblight_sethsv_noeeprom_cyan(); */
+  }
+  update_backlight();
+}
+void change_OS(void) {
+  user_config.use_mac = !user_config.use_mac;
+  set_single_persistent_default_layer(user_config.use_mac);
+  go_to_mode();
+  eeconfig_update_user(user_config.raw);
+}
+
 // Init
 void keyboard_post_init_user(void) {
   user_config.raw = eeconfig_read_user();
   rgblight_enable();
   rgblight_mode(1);
   go_to_mode();
-  update_backlight();
 }
 
 // Main Loop
