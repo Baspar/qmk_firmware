@@ -147,27 +147,27 @@ void update_backlight(void) {
   bool use_mac = user_config.use_mac;
   int hue_mac = user_config.hues % 16;
   int hue_unix = user_config.hues / 16;
-  int brightness_mac = user_config.brightnesses % 16;
-  int brightness_unix = user_config.brightnesses / 16;
+  int brightness_mac = user_config.brightnesses % 8;
+  int brightness_unix = user_config.brightnesses / 8 % 8;
   rgblight_sethsv_noeeprom(
       (use_mac ? hue_mac : hue_unix) * 16 + SHIFT_HUE,
       255,
-      (use_mac ? brightness_mac : brightness_unix) * 16 + SHIFT_BRIGHTNESS
+      (use_mac ? brightness_mac : brightness_unix) * 32 + SHIFT_BRIGHTNESS
     );
 }
 void change_brightness(int delta) {
   bool use_mac = user_config.use_mac;
 
-  int brightness_mac = user_config.brightnesses % 16;
-  int brightness_unix = user_config.brightnesses / 16;
+  int brightness_mac = user_config.brightnesses % 8;
+  int brightness_unix = user_config.brightnesses / 8 % 8;
 
   if (use_mac) {
-    brightness_mac = MIN(15, MAX(0, brightness_mac + delta));
+    brightness_mac = MIN(7, MAX(0, brightness_mac + delta));
   } else {
-    brightness_unix = MIN(15, MAX(0, brightness_unix + delta));
+    brightness_unix = MIN(7, MAX(0, brightness_unix + delta));
   }
 
-  user_config.brightnesses = (brightness_unix * 16) + brightness_mac;
+  user_config.brightnesses = (brightness_unix * 8) + brightness_mac;
 
   update_backlight();
   eeconfig_update_user(user_config.raw);
@@ -190,22 +190,12 @@ void change_hue(int delta) {
   eeconfig_update_user(user_config.raw);
 }
 
-// Idle keyboard
-void suspend_power_down_user(void) {
-  rgblight_enable_noeeprom();
-}
-void suspend_wakeup_init_user(void) {
-  rgblight_enable_noeeprom();
-}
-
 // OS handling
 void go_to_mode(void) {
   if (user_config.use_mac) {
     set_unicode_input_mode(UC_OSX);
-    /* rgblight_sethsv_noeeprom_magenta(); */
   } else {
     set_unicode_input_mode(UC_LNX);
-    /* rgblight_sethsv_noeeprom_cyan(); */
   }
   update_backlight();
 }
