@@ -51,6 +51,12 @@ enum custom_keycodes {
   RGB_OFF
 };
 
+enum rgb_status {
+  ON,
+  ONE_TIME_OFF,
+  OFF
+};
+
 // Accent handling
 char ALT_LETTER = '\0';
 int ALT_MOD = -1;
@@ -142,7 +148,7 @@ void check_accent(void) {
 // Backlight handling
 #define SHIFT_HUE 15
 #define SHIFT_BRIGHTNESS 15
-bool force_rgb_off = false;
+int rgb_status = ON;
 void update_backlight(void) {
   bool use_mac = user_config.use_mac;
   int hue_mac = user_config.hues % 16;
@@ -217,15 +223,26 @@ void keyboard_post_init_user(void) {
 // Main Loop
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  if (record->event.pressed && force_rgb_off) {
-    force_rgb_off = false;
-      rgblight_enable_noeeprom();
+  if (record->event.pressed && rgb_status == ONE_TIME_OFF) {
+    rgb_status = ON;
+    rgblight_enable_noeeprom();
+    return false;
   }
   switch (keycode) {
     case RGB_OFF:
-      rgblight_disable_noeeprom();
-      force_rgb_off = true;
-      return false;
+      if (!record->event.pressed) {
+        if (shift_pressed && rgb_status == ON) {
+          rgblight_disable_noeeprom();
+          rgb_status = OFF;
+        } else if (!shift_pressed && rgb_status == ON){
+          rgblight_disable_noeeprom();
+          rgb_status = ONE_TIME_OFF;
+        } else {
+          rgblight_enable_noeeprom();
+          rgb_status = ON;
+        }
+        return false;
+      }
     case DEC_COL:
       if (!record->event.pressed) {
         if (shift_pressed) { change_brightness(-1); } else { change_hue(-1); }
