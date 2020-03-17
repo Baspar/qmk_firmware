@@ -7,6 +7,7 @@ typedef union {
     uint8_t hues :8;
     uint8_t brightnesses :6;
     uint8_t modes :6;
+    uint8_t speeds :6;
   };
 } user_config_t;
 user_config_t user_config;
@@ -161,20 +162,33 @@ int rgb_modes[8] = {
   24, // RGBLIGHT_MODE_CHRISTMAS
   25  // RGBLIGHT_MODE_STATIC_GRADIENT
 };
+int rgb_speeds[8] = {
+  1, // RGBLIGHT_MODE_STATIC_LIGHT
+  4, // RGBLIGHT_MODE_BREATHING
+  3, // RGBLIGHT_MODE_RAINBOW_MOOD
+  6, // RGBLIGHT_MODE_RAINBOW_SWIRL
+  6, // RGBLIGHT_MODE_SNAKE
+  3, // RGBLIGHT_MODE_KNIGHT
+  1, // RGBLIGHT_MODE_CHRISTMAS
+  8  // RGBLIGHT_MODE_STATIC_GRADIENT
+};
 void update_backlight(void) {
   bool use_mac = user_config.use_mac;
   int hue_mac = user_config.hues % 16;
   int hue_unix = user_config.hues / 16;
   int mode_mac = user_config.modes % 8;
   int mode_unix = user_config.modes / 8 % 8;
+  int speed_mac = user_config.speeds % 8;
+  int speed_unix = user_config.speeds / 8 % 8;
   int brightness_mac = user_config.brightnesses % 8;
   int brightness_unix = user_config.brightnesses / 8 % 8;
+  int max_speed = rgb_speeds[use_mac ? mode_mac : mode_unix];
   rgblight_sethsv_noeeprom(
       (use_mac ? hue_mac : hue_unix) * 16 + SHIFT_HUE,
       255,
       (use_mac ? brightness_mac : brightness_unix) * 32 + SHIFT_BRIGHTNESS
     );
-  rgblight_mode_noeeprom(rgb_modes[use_mac ? mode_mac : mode_unix]);
+  rgblight_mode_noeeprom(rgb_modes[use_mac ? mode_mac : mode_unix] + (use_mac ? speed_mac : speed_unix) % max_speed);
 }
 void change_brightness(int delta) {
   bool use_mac = user_config.use_mac;
@@ -227,6 +241,27 @@ void change_mode(int delta) {
   update_backlight();
   eeconfig_update_user(user_config.raw);
 }
+void change_speed(int delta) {
+  bool use_mac = user_config.use_mac;
+
+  int mode_mac = user_config.modes % 8;
+  int mode_unix = user_config.modes / 8 % 8;
+  int max_speed = rgb_speeds[use_mac ? mode_mac : mode_unix];
+
+  int speed_mac = user_config.speeds % 8;
+  int speed_unix = user_config.speeds / 8 % 8;
+
+  if (use_mac) {
+    speed_mac = (speed_mac + delta) % max_speed;
+  } else {
+    speed_unix = (speed_unix + delta) % max_speed;
+  }
+
+  user_config.speeds = (speed_unix * 8) + speed_mac;
+
+  update_backlight();
+  eeconfig_update_user(user_config.raw);
+}
 
 // OS handling
 void go_to_mode(void) {
@@ -262,7 +297,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case RGB_STP:
       if (!record->event.pressed) {
-        change_mode(1);
+        if (shift_pressed) {
+          change_speed(1);
+        } else {
+          change_mode(1);
+        }
         return false;
       }
     case RGB_OFF:
