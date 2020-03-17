@@ -5,7 +5,8 @@ typedef union {
   struct {
     bool use_mac :1;
     uint8_t hues :8;
-    uint8_t brightnesses :8;
+    uint8_t brightnesses :6;
+    uint8_t modes :6;
   };
 } user_config_t;
 user_config_t user_config;
@@ -150,10 +151,22 @@ void check_accent(void) {
 #define SHIFT_HUE 15
 #define SHIFT_BRIGHTNESS 15
 int rgb_status = ON;
+int rgb_modes[8] = {
+  1,  // RGBLIGHT_MODE_STATIC_LIGHT
+  2,  // RGBLIGHT_MODE_BREATHING
+  6,  // RGBLIGHT_MODE_RAINBOW_MOOD
+  9,  // RGBLIGHT_MODE_RAINBOW_SWIRL
+  15, // RGBLIGHT_MODE_SNAKE
+  21, // RGBLIGHT_MODE_KNIGHT
+  24, // RGBLIGHT_MODE_CHRISTMAS
+  25  // RGBLIGHT_MODE_STATIC_GRADIENT
+};
 void update_backlight(void) {
   bool use_mac = user_config.use_mac;
   int hue_mac = user_config.hues % 16;
   int hue_unix = user_config.hues / 16;
+  int mode_mac = user_config.modes % 8;
+  int mode_unix = user_config.modes / 8 % 8;
   int brightness_mac = user_config.brightnesses % 8;
   int brightness_unix = user_config.brightnesses / 8 % 8;
   rgblight_sethsv_noeeprom(
@@ -161,6 +174,7 @@ void update_backlight(void) {
       255,
       (use_mac ? brightness_mac : brightness_unix) * 32 + SHIFT_BRIGHTNESS
     );
+  rgblight_mode_noeeprom(rgb_modes[use_mac ? mode_mac : mode_unix]);
 }
 void change_brightness(int delta) {
   bool use_mac = user_config.use_mac;
@@ -196,6 +210,23 @@ void change_hue(int delta) {
   update_backlight();
   eeconfig_update_user(user_config.raw);
 }
+void change_mode(int delta) {
+  bool use_mac = user_config.use_mac;
+
+  int mode_mac = user_config.modes % 8;
+  int mode_unix = user_config.modes / 8 % 8;
+
+  if (use_mac) {
+    mode_mac = (mode_mac + delta) % 8;
+  } else {
+    mode_unix = (mode_unix + delta) % 8;
+  }
+
+  user_config.modes = (mode_unix * 8) + mode_mac;
+
+  update_backlight();
+  eeconfig_update_user(user_config.raw);
+}
 
 // OS handling
 void go_to_mode(void) {
@@ -217,7 +248,6 @@ void change_OS(void) {
 void keyboard_post_init_user(void) {
   user_config.raw = eeconfig_read_user();
   rgblight_enable();
-  rgblight_mode(1);
   go_to_mode();
 }
 
@@ -230,11 +260,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return false;
   }
   switch (keycode) {
-    /* case RGB_STP: */
-    /*   if (!record->event.pressed) { */
-    /*     rgblight_step_noeeprom(); */
-    /*     return false; */
-    /*   } */
+    case RGB_STP:
+      if (!record->event.pressed) {
+        change_mode(1);
+        return false;
+      }
     case RGB_OFF:
       if (!record->event.pressed) {
         if (shift_pressed && rgb_status == ON) {
