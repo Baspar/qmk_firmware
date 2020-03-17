@@ -214,9 +214,9 @@ void change_hue(int delta) {
   int hue_unix = user_config.hues / 16;
 
   if (use_mac) {
-    hue_mac = MIN(15, MAX(0, hue_mac + delta));
+    hue_mac = (hue_mac + delta) % 16;
   } else {
-    hue_unix = MIN(15, MAX(0, hue_unix + delta));
+    hue_unix = (hue_unix + delta) % 16;
   }
 
   user_config.hues = hue_unix * 16 + hue_mac;
