@@ -230,13 +230,20 @@ void change_mode(int delta) {
   int mode_mac = user_config.modes % 8;
   int mode_unix = user_config.modes / 8 % 8;
 
+  int speed_mac = user_config.speeds % 8;
+  int speed_unix = user_config.speeds / 8 % 8;
+
+
   if (use_mac) {
     mode_mac = (mode_mac + delta) % 8;
+    speed_mac = 0;
   } else {
     mode_unix = (mode_unix + delta) % 8;
+    speed_unix = 0;
   }
 
   user_config.modes = (mode_unix * 8) + mode_mac;
+  user_config.speeds = (speed_unix * 8) + speed_mac;
 
   update_backlight();
   eeconfig_update_user(user_config.raw);
