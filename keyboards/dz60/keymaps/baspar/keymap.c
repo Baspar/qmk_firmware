@@ -12,11 +12,6 @@ typedef union {
 } user_config_t;
 user_config_t user_config;
 
-// TapDance
-enum {
-  TAP_LAYER
-};
-
 // Macro
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -34,6 +29,7 @@ enum {
 // Custom keycodes
 enum custom_keycodes {
   CHANGE_OS = SAFE_RANGE,
+  ACCENT_LAYER,
   REG_A,
   REG_E,
   REG_I,
@@ -140,7 +136,7 @@ void check_accent(void) {
     CONVERT_TO_UNICODE("U_CIR", "00DB")
     CONVERT_TO_UNICODE("U_TRM", "00DC")
     CONVERT_TO_UNICODE("Y_ACU", "00DD")
-    CONVERT_TO_UNICODE("C_CED", "00E7")
+    CONVERT_TO_UNICODE("C_CED", "00C7")
     CONVERT_TO_UNICODE("N_TIL", "00D1")
 
     ALT_LETTER = '\0';
@@ -302,6 +298,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return false;
   }
   switch (keycode) {
+    case ACCENT_LAYER:
+      if (record->event.pressed) {
+        layer_on(_ACCENT);
+      } else {
+        layer_off(_ACCENT);
+        ALT_LETTER = '\0';
+        ALT_MOD = -1;
+      }
+      return false;
     case RGB_STP:
       if (!record->event.pressed) {
         if (shift_pressed) {
@@ -340,7 +345,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case REG_ACU:
       REGISTER_MOD(REG_ACU)
     case REG_CED:
-      REGISTER_MOD(shift_pressed ? REG_CED : REG_CIR)
+      REGISTER_MOD(shift_pressed ? REG_CIR : REG_CED)
     case REG_TRM:
       REGISTER_MOD(REG_TRM)
     case REG_CIR:
@@ -386,16 +391,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |    Shift        |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |   ,   |   .   |   /   |    Shift    |  Del  |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |    Fn   |   GUI   |   Alt   |                     Space                       |  Fn   |   L   |   D   |   U   |   R   |
+   * |    Fn   |   GUI   |   Alt   |                     Space                       |Accent |   ←   |   ↓   |   ↑   |   →   |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_DEFAULT] = LAYOUT_60_split_rshift_5x1u(
-        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4         ,KC_5   ,KC_6   ,KC_7 ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
-        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R         ,KC_T   ,KC_Y   ,KC_U ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
-        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F         ,KC_G   ,KC_H   ,KC_J ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
-        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V         ,KC_B   ,KC_N   ,KC_M ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
-        TD(TAP_LAYER)    ,KC_LGUI,KC_LALT,KC_SPC,TD(TAP_LAYER),KC_LEFT,KC_DOWN,KC_UP,KC_RIGHT
+        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4        ,KC_5   ,KC_6   ,KC_7 ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
+        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R        ,KC_T   ,KC_Y   ,KC_U ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
+        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F        ,KC_G   ,KC_H   ,KC_J ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
+        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V        ,KC_B   ,KC_N   ,KC_M ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
+        MO(_FUNCTION)    ,KC_LGUI,KC_LALT,KC_SPC,ACCENT_LAYER,KC_LEFT,KC_DOWN,KC_UP,KC_RIGHT
       ),
 
   /* Default Mac
@@ -408,16 +413,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |    Shift        |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |   ,   |   .   |   /   |    Shift    |  Del  |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |    Fn   |  Option |   Cmd   |                     Space                       |  Fn   |   L   |   D   |   U   |   R   |
+   * |    Fn   |  Option |   Cmd   |                     Space                       |Accent |   ←   |   ↓   |   ↑   |   →   |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_DEFAULT_MAC] = LAYOUT_60_split_rshift_5x1u(
-        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4         ,KC_5   ,KC_6   ,KC_7  ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
-        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R         ,KC_T   ,KC_Y   ,KC_U  ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
-        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F         ,KC_G   ,KC_H   ,KC_J  ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
-        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V         ,KC_B   ,KC_N   ,KC_M  ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
-        TD(TAP_LAYER)    ,KC_LALT,KC_LGUI,KC_SPC,TD(TAP_LAYER),KC_LEFT,KC_DOWN,KC_UP ,KC_RIGHT
+        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4        ,KC_5   ,KC_6   ,KC_7  ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
+        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R        ,KC_T   ,KC_Y   ,KC_U  ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
+        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F        ,KC_G   ,KC_H   ,KC_J  ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
+        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V        ,KC_B   ,KC_N   ,KC_M  ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
+        MO(_FUNCTION)    ,KC_LALT,KC_LGUI,KC_SPC,ACCENT_LAYER,KC_LEFT,KC_DOWN,KC_UP ,KC_RIGHT
       ),
 
   /* Function
@@ -430,16 +435,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |                 |       |       |       |       |       |       |       |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |         |CHANGE_OS|         |                    VOL_TOGGLE                   |       | HOME  |PAGE_DN|PAGE_UP|  END  |
+   * |         |         |         |                    VOL_TOGGLE                   |CHNG_OS| HOME  |PAGE_DN|PAGE_UP|  END  |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_FUNCTION] = LAYOUT_60_split_rshift_5x1u(
-        RGB_OFF,KC_F1    ,KC_F2 ,KC_F3   ,KC_F4 ,KC_F5  ,KC_F6    ,KC_F7       ,KC_F8     ,KC_F9  ,KC_F10 ,KC_F11  ,KC_F12 ,RESET ,
-        ______ ,______   ,______,______  ,______,______ ,______   ,______      ,______    ,______ ,______ ,DEC_COL ,INC_COL,RGB_STP,
-        ______ ,______   ,______,______  ,______,______ ,______   ,KC__VOLDOWN ,KC__VOLUP ,______ ,______ ,______  ,______ ,
-        ______ ,______   ,______,______  ,______,______ ,______   ,______      ,______    ,______ ,______ ,______  ,______ ,
-        ______ ,CHANGE_OS,______,KC__MUTE,______,KC_HOME,KC_PGDOWN,KC_PGUP     ,KC_END
+        RGB_OFF,KC_F1  ,KC_F2 ,KC_F3   ,KC_F4    ,KC_F5  ,KC_F6    ,KC_F7       ,KC_F8     ,KC_F9  ,KC_F10 ,KC_F11  ,KC_F12 ,RESET  ,
+        ______ ,______ ,______,______  ,______   ,______ ,______   ,______      ,______    ,______ ,______ ,DEC_COL ,INC_COL,RGB_STP,
+        ______ ,______ ,______,______  ,______   ,______ ,______   ,KC__VOLDOWN ,KC__VOLUP ,______ ,______ ,______  ,______ ,
+        ______ ,______ ,______,______  ,______   ,______ ,______   ,______      ,______    ,______ ,______ ,______  ,______ ,
+        ______ ,______ ,______,KC__MUTE,CHANGE_OS,KC_HOME,KC_PGDOWN,KC_PGUP     ,KC_END
       ),
 
   /* Accent Layer
@@ -463,27 +468,4 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ______ ,______,______,REG_C ,______,______,REG_N  ,______,REG_CED,______,______ ,______ ,______,
         ______ ,______,______,______,______,______,______ ,______,______
       ),
-};
-
-// Tap Dance
-void x_reset (qk_tap_dance_state_t *state, void *user_data) {
-  if (state->count == 1) {
-    layer_off(_FUNCTION);
-  } else {
-    layer_off(_ACCENT);
-    ALT_LETTER = '\0';
-    ALT_MOD = -1;
-  }
-}
-
-void x_finished (qk_tap_dance_state_t *state, void *user_data) {
-  if (state->count == 1) {
-    layer_on(_FUNCTION);
-  } else {
-    layer_on(_ACCENT);
-  }
-}
-
-qk_tap_dance_action_t tap_dance_actions[] = {
-  [TAP_LAYER]     = ACTION_TAP_DANCE_FN_ADVANCED(NULL,x_finished, x_reset)
 };
