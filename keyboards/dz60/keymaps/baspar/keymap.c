@@ -341,7 +341,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
     case REG_GRV:
-      REGISTER_MOD(shift_pressed ? REG_GRV : REG_TIL)
+      REGISTER_MOD(shift_pressed ? REG_TIL : REG_GRV)
     case REG_ACU:
       REGISTER_MOD(REG_ACU)
     case REG_CED:
