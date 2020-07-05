@@ -30,6 +30,8 @@ user_config_t user_config;
 // Custom keycodes
 enum custom_keycodes {
   CHANGE_OS = SAFE_RANGE,
+
+  // ACCENTS
   ACCENT_LAYER,
   REG_A,
   REG_E,
@@ -45,11 +47,20 @@ enum custom_keycodes {
   REG_TRM,
   REG_CIR,
   REG_TIL,
+
+  // RGB
   DEC_COL,
   INC_COL,
   RGB_OFF,
   RGB_STP,
-  SHRUG
+
+  // ASCII
+  SHRUG,
+  FLIP_TABLE,
+  LENNY,
+  WAT,
+  HAPPY,
+  BEAR
 };
 
 enum rgb_status {
@@ -306,6 +317,35 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         send_unicode_hex_string("00AF 005C 005F 0028 30C4 0029 005F 002F 00AF");
       }
       return false;
+    case FLIP_TABLE:
+      if (record->event.pressed) {
+        if (shift_pressed) {
+          send_unicode_hex_string("0028 30D8 FF65 005F FF65 0029 30D8 2533 2501 2533");
+        } else {
+          send_unicode_hex_string("0028 256F 00B0 25A1 00B0 FF09 256F FE35 0020 253B 2501 253B");
+        }
+      }
+      return false;
+    case WAT:
+      if (record->event.pressed) {
+        send_unicode_hex_string("0ca0 005f 0ca0");
+      }
+      return false;
+    case HAPPY:
+      if (record->event.pressed) {
+        send_unicode_hex_string("1555 0028 0020 141b 0020 0029 1557");
+      }
+      return false;
+    case BEAR:
+      if (record->event.pressed) {
+        send_unicode_hex_string("0295 0020 2022 1d25 2022 0294");
+      }
+      return false;
+    case LENNY:
+      if (record->event.pressed) {
+        send_unicode_hex_string("0028 0020 0361 00b0 0020 0644 035c 0020 0361 00b0 0029");
+      }
+      return false;
     case ACCENT_LAYER:
       if (record->event.pressed) {
         layer_on(_ACCENT);
@@ -492,10 +532,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_ASCII] = LAYOUT_60_split_rshift_5x1u(
-      ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______,
-      ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______,
-      ______, ______, SHRUG , ______, ______, ______, ______, ______, ______, ______, ______, ______, ______,
-      ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______, ______,
-      ______, ______, ______, ______, ______, ______, ______, ______, ______
+      ______, ______, ______, ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
+      ______, ______, WAT   , ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
+      ______, ______, SHRUG , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
+      ______, ______, ______, ______, ______    , BEAR  , ______, ______, ______, ______, ______, ______, ______,
+      ______, ______, ______, ______, ______    , ______, ______, ______, ______
       ),
 };
