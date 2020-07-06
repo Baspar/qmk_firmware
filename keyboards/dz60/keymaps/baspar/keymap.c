@@ -60,7 +60,8 @@ enum custom_keycodes {
   LENNY,
   WAT,
   HAPPY,
-  BEAR
+  BEAR,
+  CAT
 };
 
 enum rgb_status {
@@ -336,6 +337,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         send_unicode_hex_string("1555 0028 0020 141b 0020 0029 1557");
       }
       return false;
+    case CAT:
+      if (record->event.pressed) {
+        send_unicode_hex_string("0020 002f 1420 ff61 2038 ff61 141f 005c");
+      }
+      return false;
     case BEAR:
       if (record->event.pressed) {
         send_unicode_hex_string("0295 0020 2022 1d25 2022 0294");
@@ -535,7 +541,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       ______, ______, ______, ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
       ______, ______, WAT   , ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
       ______, ______, SHRUG , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
-      ______, ______, ______, ______, ______    , BEAR  , ______, ______, ______, ______, ______, ______, ______,
+      ______, ______, ______, CAT   , ______    , BEAR  , ______, ______, ______, ______, ______, ______, ______,
       ______, ______, ______, ______, ______    , ______, ______, ______, ______
       ),
 };
