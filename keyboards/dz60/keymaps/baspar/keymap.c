@@ -55,13 +55,14 @@ enum custom_keycodes {
   RGB_STP,
 
   // ASCII
-  SHRUG,
+  MEH,
   FLIP_TABLE,
   LENNY,
   WAT,
   HAPPY,
   BEAR,
-  CAT
+  CAT,
+  SAD
 };
 
 enum rgb_status {
@@ -313,7 +314,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return false;
   }
   switch (keycode) {
-    case SHRUG:
+    // ASCII
+    case MEH:
       if (record->event.pressed) {
         send_unicode_hex_string("00AF 005C 005F 0028 30C4 0029 005F 002F 00AF");
       }
@@ -337,6 +339,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         send_unicode_hex_string("1555 0028 0020 141b 0020 0029 1557");
       }
       return false;
+    case SAD:
+      if (record->event.pressed) {
+        send_unicode_hex_string("0ca5 005f 0ca5");
+      }
+      return false;
     case CAT:
       if (record->event.pressed) {
         send_unicode_hex_string("0020 002f 1420 ff61 2038 ff61 141f 005c");
@@ -352,15 +359,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         send_unicode_hex_string("0028 0020 0361 00b0 0020 0644 035c 0020 0361 00b0 0029");
       }
       return false;
-    case ACCENT_LAYER:
-      if (record->event.pressed) {
-        layer_on(_ACCENT);
-      } else {
-        layer_off(_ACCENT);
-        ALT_LETTER = '\0';
-        ALT_MOD = -1;
-      }
-      return false;
+
+    // RGB
     case RGB_STP:
       if (!record->event.pressed) {
         if (shift_pressed) {
@@ -394,6 +394,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (shift_pressed) { change_brightness(1); } else { change_hue(1); }
         return false;
       }
+
+    // Accent
+    case ACCENT_LAYER:
+      if (record->event.pressed) {
+        layer_on(_ACCENT);
+      } else {
+        layer_off(_ACCENT);
+        ALT_LETTER = '\0';
+        ALT_MOD = -1;
+      }
+      return false;
     case REG_GRV:
       REGISTER_MOD(shift_pressed ? REG_TIL : REG_GRV)
     case REG_ACU:
@@ -525,13 +536,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   /* ASCII Layer
    * ,-----------------------------------------------------------------------------------------------------------------------.
-   * |REG_GRV|       |       |       |       |       |REG_CIR|       |       |       |       |       |       |               |
+   * |       |       |       |       |       |       |       |       |       |       |       |       |       |               |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |       |       | REG_E |       |       | REG_Y | REG_U | REG_I | REG_O |       |       |       |           |
+   * |           |       |       |       |       |       |       |       |       |       |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |             | SHRUG |       |       |       |       |       |       |       |       |REG_TRM|REG_ACU|                 |
+   * |             |     |       |       |       |       |       |       |       |       |       |       |                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|       |       |             |       |
+   * |                 |       |       |       |       |       |       |       |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |         |         |         |                                                 |       |       |       |       |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
@@ -540,8 +551,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_ASCII] = LAYOUT_60_split_rshift_5x1u(
       ______, ______, ______, ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
       ______, ______, WAT   , ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
-      ______, ______, SHRUG , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
-      ______, ______, ______, CAT   , ______    , BEAR  , ______, ______, ______, ______, ______, ______, ______,
+      ______, ______, SAD   , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
+      ______, ______, ______, CAT   , ______    , BEAR  , ______, MEH   , ______, ______, ______, ______, ______,
       ______, ______, ______, ______, ______    , ______, ______, ______, ______
       ),
 };
