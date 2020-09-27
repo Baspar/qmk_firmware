@@ -462,16 +462,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |    Shift        |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |   ,   |   .   |   /   |    Shift    |  Del  |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |    Fn   |   GUI   |   Alt   |                     Space                       |Accent |   ←   |   ↓   |   ↑   |   →   |
+   * | Accent  |   GUI   |   Alt   |                     Space                       |  Fn   |   ←   |   ↓   |   ↑   |   →   |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_DEFAULT] = LAYOUT_60_split_rshift_5x1u(
-        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4        ,KC_5   ,KC_6   ,KC_7 ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
-        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R        ,KC_T   ,KC_Y   ,KC_U ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
-        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F        ,KC_G   ,KC_H   ,KC_J ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
-        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V        ,KC_B   ,KC_N   ,KC_M ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
-        MO(_FUNCTION)    ,KC_LGUI,KC_LALT,KC_SPC,ACCENT_LAYER,KC_LEFT,KC_DOWN,KC_UP,KC_RIGHT
+        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4         ,KC_5   ,KC_6   ,KC_7 ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
+        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R         ,KC_T   ,KC_Y   ,KC_U ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
+        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F         ,KC_G   ,KC_H   ,KC_J ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
+        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V         ,KC_B   ,KC_N   ,KC_M ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
+        ACCENT_LAYER     ,KC_LGUI,KC_LALT,KC_SPC,MO(_FUNCTION),KC_LEFT,KC_DOWN,KC_UP,KC_RIGHT
       ),
 
   /* Default Mac
@@ -484,16 +484,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |    Shift        |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |   ,   |   .   |   /   |    Shift    |  Del  |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |    Fn   |  Option |   Cmd   |                     Space                       |Accent |   ←   |   ↓   |   ↑   |   →   |
+   * | Accent  |  Option |   Cmd   |                     Space                       |  Fn   |   ←   |   ↓   |   ↑   |   →   |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_DEFAULT_MAC] = LAYOUT_60_split_rshift_5x1u(
-        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4        ,KC_5   ,KC_6   ,KC_7  ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
-        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R        ,KC_T   ,KC_Y   ,KC_U  ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
-        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F        ,KC_G   ,KC_H   ,KC_J  ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
-        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V        ,KC_B   ,KC_N   ,KC_M  ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
-        MO(_FUNCTION)    ,KC_LALT,KC_LGUI,KC_SPC,ACCENT_LAYER,KC_LEFT,KC_DOWN,KC_UP ,KC_RIGHT
+        KC_GRAVE         ,KC_1   ,KC_2   ,KC_3  ,KC_4         ,KC_5   ,KC_6   ,KC_7  ,KC_8   ,KC_9  ,KC_0   ,KC_MINS,KC_EQL ,KC_BSPC,
+        KC_TAB           ,KC_Q   ,KC_W   ,KC_E  ,KC_R         ,KC_T   ,KC_Y   ,KC_U  ,KC_I   ,KC_O  ,KC_P   ,KC_LBRC,KC_RBRC,KC_BSLS,
+        LCTL_T(KC_ESCAPE),KC_A   ,KC_S   ,KC_D  ,KC_F         ,KC_G   ,KC_H   ,KC_J  ,KC_K   ,KC_L  ,KC_SCLN,KC_QUOT,KC_ENT ,
+        KC_LSFT          ,KC_Z   ,KC_X   ,KC_C  ,KC_V         ,KC_B   ,KC_N   ,KC_M  ,KC_COMM,KC_DOT,KC_SLSH,KC_RSFT,KC_DEL ,
+        ACCENT_LAYER     ,KC_LALT,KC_LGUI,KC_SPC,MO(_FUNCTION),KC_LEFT,KC_DOWN,KC_UP ,KC_RIGHT
       ),
 
   /* Function
@@ -506,16 +506,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |                 |       |       |       |       |       |       |       |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |         |         |         |                    VOL_TOGGLE                   |CHNG_OS| HOME  |PAGE_DN|PAGE_UP|  END  |
+   * | CHNG_OS |         |         |                    VOL_TOGGLE                   |       | HOME  |PAGE_DN|PAGE_UP|  END  |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_FUNCTION] = LAYOUT_60_split_rshift_5x1u(
-        RGB_OFF,KC_F1  ,KC_F2  ,KC_F3   ,KC_F4    ,KC_F5  ,KC_F6    ,KC_F7       ,KC_F8     ,KC_F9  ,KC_F10 ,KC_F11  ,KC_F12 ,RESET  ,
-        ______ ,______ ,______ ,______  ,______   ,______ ,______   ,______      ,______    ,______ ,______ ,DEC_COL ,INC_COL,RGB_STP,
-        ______ ,______ ,KC_PSCR,______  ,______   ,______ ,______   ,KC__VOLDOWN ,KC__VOLUP ,______ ,______ ,______  ,______ ,
-        ______ ,______ ,______ ,______  ,______   ,______ ,______   ,______      ,______    ,______ ,______ ,______  ,______ ,
-        ______ ,______ ,______ ,KC__MUTE,CHANGE_OS,KC_HOME,KC_PGDOWN,KC_PGUP     ,KC_END
+        RGB_OFF   ,KC_F1  ,KC_F2  ,KC_F3   ,KC_F4  ,KC_F5  ,KC_F6    ,KC_F7       ,KC_F8     ,KC_F9  ,KC_F10 ,KC_F11  ,KC_F12 ,RESET  ,
+        ______    ,______ ,______ ,______  ,______ ,______ ,______   ,______      ,______    ,______ ,______ ,DEC_COL ,INC_COL,RGB_STP,
+        ______    ,______ ,KC_PSCR,______  ,______ ,______ ,______   ,KC__VOLDOWN ,KC__VOLUP ,______ ,______ ,______  ,______ ,
+        ______    ,______ ,______ ,______  ,______ ,______ ,______   ,______      ,______    ,______ ,______ ,______  ,______ ,
+        CHANGE_OS ,______ ,______ ,KC__MUTE,______ ,KC_HOME,KC_PGDOWN,KC_PGUP     ,KC_END
       ),
 
   /* Accent Layer
@@ -528,16 +528,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |         |         |         |                                                 |       |       |       |       |       |
+   * |         |         |         |                     ASCII                       |       |       |       |       |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_ACCENT] = LAYOUT_60_split_rshift_5x1u(
-        REG_GRV,______,______,______,______,______,REG_CIR,______,______ ,______,______ ,______ ,______,______,
-        ______ ,______,______,REG_E ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______ ,______,______,
-        ______ ,REG_A ,______,______,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU,OSL(_ASCII),
-        ______ ,______,______,REG_C ,______,______,REG_N  ,______,REG_CED,______,______ ,______ ,______,
-        ______ ,______,______,______,______,______,______ ,______,______
+        REG_GRV,______,______,______     ,______,______,REG_CIR,______,______ ,______,______ ,______ ,______ ,______,
+        ______ ,______,______,REG_E      ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______ ,______ ,______,
+        ______ ,REG_A ,______,______     ,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU,______ ,
+        ______ ,______,______,REG_C      ,______,______,REG_N  ,______,REG_CED,______,______ ,______ ,______ ,
+        ______ ,______,______,OSL(_ASCII),______,______,______ ,______,______
       ),
 
   /* ASCII Layer
