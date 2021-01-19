@@ -318,50 +318,60 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // ASCII
     case MEH:
       if (record->event.pressed) {
+        /* ¯\_(ツ)_/¯ */
         send_unicode_hex_string("00AF 005C 005F 0028 30C4 0029 005F 002F 00AF");
       }
       return false;
     case FLIP_TABLE:
       if (record->event.pressed) {
         if (shift_pressed) {
+          /* (╯°□°）╯︵ ┻━┻) */
           send_unicode_hex_string("0028 30D8 FF65 005F FF65 0029 30D8 2533 2501 2533");
         } else {
+          /* (ヘ･_･)ヘ┳━┳ */
           send_unicode_hex_string("0028 256F 00B0 25A1 00B0 FF09 256F FE35 0020 253B 2501 253B");
         }
       }
       return false;
     case WAT:
       if (record->event.pressed) {
+        /* ಠ_ಠ */
         send_unicode_hex_string("0ca0 005f 0ca0");
       }
       return false;
     case HAPPY:
       if (record->event.pressed) {
+        /* ᕕ( ᐛ  )ᕗ */
         send_unicode_hex_string("1555 0028 0020 141b 0020 0029 1557");
       }
       return false;
     case SAD:
       if (record->event.pressed) {
+        /* ಥ_ಥ */
         send_unicode_hex_string("0ca5 005f 0ca5");
       }
       return false;
     case CAT:
       if (record->event.pressed) {
+         /* /ᐠ｡‸｡ᐟ\ */
         send_unicode_hex_string("0020 002f 1420 ff61 2038 ff61 141f 005c");
       }
       return false;
     case BEAR:
       if (record->event.pressed) {
+        /* ʕ •ᴥ•ʔ */
         send_unicode_hex_string("0295 0020 2022 1d25 2022 0294");
       }
       return false;
     case LENNY:
       if (record->event.pressed) {
+        /* ( ͡° ل͜ ͡° ) */
         send_unicode_hex_string("0028 0020 0361 00b0 0020 0644 035c 0020 0361 00b0 0029");
       }
       return false;
     case YAY:
       if (record->event.pressed) {
+        /* \( ﾟヮﾟ)/ */
         send_unicode_hex_string("005c 0028 0020 ff9f 30ee ff9f 0029 002f");
       }
       return false;
@@ -388,8 +398,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           rgblight_enable_noeeprom();
           rgb_status = ON;
         }
-        return false;
       }
+      return true;
     case DEC_COL:
       if (!record->event.pressed) {
         if (shift_pressed) { change_brightness(-1); } else { change_hue(-1); }
@@ -546,7 +556,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |           |       |  WAT  |       |       |       |  YAY  |       |       |       |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |             |       |  SAD  |       | FLIP  |       | HAPPY |       |       |       |       |       |                 |
+   * |             |       |  SAD  |       | FLIP  |       | HAPPY |       |       | LENNY |       |       |                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |                 |       |       |  CAT  |       | BEAR  |       |  MEH  |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
