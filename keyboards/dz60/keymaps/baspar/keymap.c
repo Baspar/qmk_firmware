@@ -306,6 +306,20 @@ void keyboard_post_init_user(void) {
   go_to_mode();
 }
 
+// Special LED color
+uint32_t layer_state_set_user(uint32_t state) {
+  switch(biton32(state)) {
+    case _ASCII:
+      rgblight_sethsv_noeeprom(0, 0, 255);
+      rgblight_mode_noeeprom(15);
+      break;
+    default:
+      update_backlight();
+      break;
+  }
+  return state;
+}
+
 // Main Loop
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
