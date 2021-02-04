@@ -321,75 +321,73 @@ uint32_t layer_state_set_user(uint32_t state) {
 }
 
 // Main Loop
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+bool process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  if (record->event.pressed && rgb_status == ONE_TIME_OFF) {
-    rgb_status = ON;
-    rgblight_enable_noeeprom();
-    return false;
-  }
   switch (keycode) {
-    // ASCII
+    // ¯\_(ツ)_/¯
     case MEH:
       if (record->event.pressed) {
-        /* ¯\_(ツ)_/¯ */
         send_unicode_hex_string("00AF 005C 005F 0028 30C4 0029 005F 002F 00AF");
       }
       return false;
+    // (╯°□°）╯︵ ┻━┻) / (ヘ･_･)ヘ┳━┳
     case FLIP_TABLE:
       if (record->event.pressed) {
         if (shift_pressed) {
-          /* (╯°□°）╯︵ ┻━┻) */
           send_unicode_hex_string("0028 30D8 FF65 005F FF65 0029 30D8 2533 2501 2533");
         } else {
-          /* (ヘ･_･)ヘ┳━┳ */
           send_unicode_hex_string("0028 256F 00B0 25A1 00B0 FF09 256F FE35 0020 253B 2501 253B");
         }
       }
       return false;
+    // ಠ_ಠ
     case WAT:
       if (record->event.pressed) {
-        /* ಠ_ಠ */
         send_unicode_hex_string("0ca0 005f 0ca0");
       }
       return false;
+    // ᕕ( ᐛ  )ᕗ
     case HAPPY:
       if (record->event.pressed) {
-        /* ᕕ( ᐛ  )ᕗ */
         send_unicode_hex_string("1555 0028 0020 141b 0020 0029 1557");
       }
       return false;
+    // ಥ_ಥ
     case SAD:
       if (record->event.pressed) {
-        /* ಥ_ಥ */
         send_unicode_hex_string("0ca5 005f 0ca5");
       }
       return false;
+    // /ᐠ｡‸｡ᐟ\_
     case CAT:
       if (record->event.pressed) {
-         /* /ᐠ｡‸｡ᐟ\ */
         send_unicode_hex_string("0020 002f 1420 ff61 2038 ff61 141f 005c");
       }
       return false;
+    // ʕ •ᴥ•ʔ
     case BEAR:
       if (record->event.pressed) {
-        /* ʕ •ᴥ•ʔ */
         send_unicode_hex_string("0295 0020 2022 1d25 2022 0294");
       }
       return false;
+    // ( ͡° ل͜ ͡° )
     case LENNY:
       if (record->event.pressed) {
-        /* ( ͡° ل͜ ͡° ) */
         send_unicode_hex_string("0028 0020 0361 00b0 0020 0644 035c 0020 0361 00b0 0029");
       }
       return false;
+    // \( ﾟヮﾟ)/
     case YAY:
       if (record->event.pressed) {
-        /* \( ﾟヮﾟ)/ */
         send_unicode_hex_string("005c 0028 0020 ff9f 30ee ff9f 0029 002f");
       }
       return false;
-
+  }
+  return false;
+}
+bool process_record_user_RGB(uint16_t keycode, keyrecord_t *record) {
+  bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
+  switch (keycode) {
     // RGB
     case RGB_STP:
       if (!record->event.pressed) {
@@ -424,7 +422,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (shift_pressed) { change_brightness(1); } else { change_hue(1); }
         return false;
       }
-
+  }
+  return false;
+}
+bool process_record_user_ACCENT(uint16_t keycode, keyrecord_t *record) {
+  bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
+  switch (keycode) {
     // Accent
     case ACCENT_LAYER:
       if (record->event.pressed) {
@@ -463,14 +466,35 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       REGISTER_LETTER(shift_pressed ? 'C' : 'c');
     case REG_N:
       REGISTER_LETTER(shift_pressed ? 'N' : 'n');
+  }
+  return false;
+}
+bool process_record_user_OTHER(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case 'a' ... 'z':
+      if (record->event.pressed) {
+      }
     case CHANGE_OS:
       if (!record->event.pressed) {
         change_OS();
       }
       return false;
-    default:
-      return true;
   }
+  return false;
+}
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (record->event.pressed && rgb_status == ONE_TIME_OFF) {
+    rgb_status = ON;
+    rgblight_enable_noeeprom();
+    return false;
+  }
+  return (
+      process_record_user_ASCII(keycode, record) ||
+      process_record_user_RGB(keycode, record) ||
+      process_record_user_ACCENT(keycode, record) ||
+      process_record_user_OTHER(keycode, record) ||
+      true
+  );
 }
 
 // Keymap
