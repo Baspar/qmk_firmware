@@ -26,6 +26,7 @@ user_config_t user_config;
 #define _FUNCTION 2
 #define _ACCENT 3
 #define _ASCII 4
+#define _SUPERSCRIPT 5
 
 // Custom keycodes
 enum custom_keycodes {
@@ -63,7 +64,47 @@ enum custom_keycodes {
   BEAR,
   CAT,
   SAD,
-  YAY
+  YAY,
+
+  // SUPERSCRIPT
+  SUP_A,
+  SUP_B,
+  SUP_C,
+  SUP_D,
+  SUP_E,
+  SUP_F,
+  SUP_G,
+  SUP_H,
+  SUP_I,
+  SUP_J,
+  SUP_K,
+  SUP_L,
+  SUP_M,
+  SUP_N,
+  SUP_O,
+  SUP_P,
+  SUP_R,
+  SUP_S,
+  SUP_T,
+  SUP_U,
+  SUP_V,
+  SUP_W,
+  SUP_X,
+  SUP_Y,
+  SUP_Z,
+  SUP_1,
+  SUP_2,
+  SUP_3,
+  SUP_4,
+  SUP_5,
+  SUP_6,
+  SUP_7,
+  SUP_8,
+  SUP_9,
+  SUP_0,
+  SUP_MIN,
+  SUP_EQL,
+  SUP_DOT,
 };
 
 enum rgb_status {
@@ -308,9 +349,18 @@ void keyboard_post_init_user(void) {
 
 // Special LED color
 uint32_t layer_state_set_user(uint32_t state) {
+  bool use_mac = user_config.use_mac;
+  int brightness_mac = user_config.brightnesses % 8;
+  int brightness_unix = user_config.brightnesses / 8 % 8;
+  int brightness = (use_mac ? brightness_mac : brightness_unix) * 32 + SHIFT_BRIGHTNESS;
+
   switch(biton32(state)) {
+    case _SUPERSCRIPT:
+      rgblight_sethsv_noeeprom(16 * 3, 255, brightness);
+      rgblight_mode_noeeprom(15);
+      break;
     case _ASCII:
-      rgblight_sethsv_noeeprom(0, 0, 255);
+      rgblight_sethsv_noeeprom(0, 0, brightness);
       rgblight_mode_noeeprom(15);
       break;
     default:
@@ -321,6 +371,128 @@ uint32_t layer_state_set_user(uint32_t state) {
 }
 
 // Main Loop
+bool process_record_user_SUPERSCRIPT(uint16_t keycode, keyrecord_t *record) {
+  bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
+  if (record->event.pressed) {
+    switch (keycode) {
+      case SUP_A:
+        send_unicode_hex_string("1D43");
+        return false;
+      case SUP_B:
+        send_unicode_hex_string("1D47");
+        return false;
+      case SUP_C:
+        send_unicode_hex_string("1D9C");
+        return false;
+      case SUP_D:
+        send_unicode_hex_string("1D48");
+        return false;
+      case SUP_E:
+        send_unicode_hex_string("1D49");
+        return false;
+      case SUP_F:
+        send_unicode_hex_string("1DA0");
+        return false;
+      case SUP_G:
+        send_unicode_hex_string("1D4D");
+        return false;
+      case SUP_H:
+        send_unicode_hex_string("02B0");
+        return false;
+      case SUP_I:
+        send_unicode_hex_string("2071");
+        return false;
+      case SUP_J:
+        send_unicode_hex_string("02B2");
+        return false;
+      case SUP_K:
+        send_unicode_hex_string("1D4F");
+        return false;
+      case SUP_L:
+        send_unicode_hex_string("02E1");
+        return false;
+      case SUP_M:
+        send_unicode_hex_string("1D50");
+        return false;
+      case SUP_N:
+        send_unicode_hex_string("207F");
+        return false;
+      case SUP_O:
+        send_unicode_hex_string("1D52");
+        return false;
+      case SUP_P:
+        send_unicode_hex_string("1D56");
+        return false;
+      case SUP_R:
+        send_unicode_hex_string("02B3");
+        return false;
+      case SUP_S:
+        send_unicode_hex_string("02E2");
+        return false;
+      case SUP_T:
+        send_unicode_hex_string("1D57");
+        return false;
+      case SUP_U:
+        send_unicode_hex_string("1D58");
+        return false;
+      case SUP_V:
+        send_unicode_hex_string("1D5B");
+        return false;
+      case SUP_W:
+        send_unicode_hex_string("02B7");
+        return false;
+      case SUP_X:
+        send_unicode_hex_string("02E3");
+        return false;
+      case SUP_Y:
+        send_unicode_hex_string("02B8");
+        return false;
+      case SUP_Z:
+        send_unicode_hex_string("1DBB");
+        return false;
+      case SUP_0:
+        send_unicode_hex_string("2070");
+        return false;
+      case SUP_1:
+        send_unicode_hex_string("00B9");
+        return false;
+      case SUP_2:
+        send_unicode_hex_string("00B2");
+        return false;
+      case SUP_3:
+        send_unicode_hex_string("00B3");
+        return false;
+      case SUP_4:
+        send_unicode_hex_string("2074");
+        return false;
+      case SUP_5:
+        send_unicode_hex_string("2075");
+        return false;
+      case SUP_6:
+        send_unicode_hex_string("2076");
+        return false;
+      case SUP_7:
+        send_unicode_hex_string("2077");
+        return false;
+      case SUP_8:
+        send_unicode_hex_string("2078");
+        return false;
+      case SUP_9:
+        send_unicode_hex_string(shift_pressed ? "207D" : "2079");
+        return false;
+      case SUP_MIN:
+        send_unicode_hex_string(shift_pressed ? "207E" : "207B");
+        return false;
+      case SUP_EQL:
+        send_unicode_hex_string(shift_pressed ? "207A" : "207C");
+        return false;
+      case SUP_DOT:
+        send_unicode_hex_string("22C5");
+        return false;
+    }
+  }
+  return false;
+}
 bool process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
   switch (keycode) {
@@ -493,6 +665,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       process_record_user_RGB(keycode, record) ||
       process_record_user_ACCENT(keycode, record) ||
       process_record_user_OTHER(keycode, record) ||
+      process_record_user_SUPERSCRIPT(keycode, record) ||
       true
   );
 }
@@ -581,11 +754,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_ACCENT] = LAYOUT_60_split_rshift_5x1u(
-        REG_GRV,______,______,______     ,______,______,REG_CIR,______,______ ,______,______ ,______ ,______ ,______,
-        ______ ,______,______,REG_E      ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______ ,______ ,______,
-        ______ ,REG_A ,______,______     ,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU,______ ,
-        ______ ,______,______,REG_C      ,______,______,REG_N  ,______,REG_CED,______,______ ,______ ,______ ,
-        ______ ,______,______,OSL(_ASCII),______,______,______ ,______,______
+        REG_GRV          ,______,______,______     ,______,______,REG_CIR,______,______ ,______,______ ,______ ,______ ,______,
+        ______           ,______,______,REG_E      ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______ ,______ ,______,
+        TO(_SUPERSCRIPT) ,REG_A ,______,______     ,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU,______ ,
+        ______           ,______,______,REG_C      ,______,______,REG_N  ,______,REG_CED,______,______ ,______ ,______ ,
+        ______           ,______,______,OSL(_ASCII),______,______,______ ,______,______
       ),
 
   /* ASCII Layer
@@ -608,5 +781,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       ______, ______, SAD   , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
       ______, ______, ______, CAT   , ______    , BEAR  , ______, MEH   , ______, ______, ______, ______, ______,
       ______, ______, ______, ______, ______    , ______, ______, ______, ______
+      ),
+
+  /* ASCII Layer
+   * ,-----------------------------------------------------------------------------------------------------------------------.
+   * |       |   ¹   |   ²   |   ³   |   ⁴   |   ⁵   |   ⁶   |   ⁷   |   ⁸   |   ⁹   |   ⁰   |   ⁻   | ⁼ ⁺   |               |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |           |       |   ʷ   |   ᵉ   |   ʳ   |   ᵗ   |   ʸ   |   ᵘ   |   ⁱ   |   ᵒ   |   ᵖ   |       |       |           |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |  _DEFAULT   |   ᵃ   |   ˢ   |   ᵈ   |   ᶠ   |   ᵍ   |   ʰ   |   ʲ   |   ᵏ   |   ˡ   |       |       |                 |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |                 |   ᶻ   |   ˣ   |   ᶜ   |   ᵛ   |   ᵇ   |   ⁿ   |   ᵐ   |       |       |       |             |       |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |         |         |         |                                                 |       |       |       |       |       |
+   * `-----------------------------------------------------------------------------------------------------------------------'
+   */
+
+  [_SUPERSCRIPT] = LAYOUT_60_split_rshift_5x1u(
+      ______          , SUP_1 , SUP_2 , SUP_3 , SUP_4  , SUP_5 , SUP_6 , SUP_7 , SUP_8 , SUP_9  , SUP_0 , SUP_MIN, SUP_EQL, ______,
+      ______          , ______, SUP_W , SUP_E , SUP_R  , SUP_T , SUP_Y , SUP_U , SUP_I , SUP_O  , SUP_P , ______ , ______ , ______,
+      TG(_SUPERSCRIPT), SUP_A , SUP_S , SUP_D , SUP_F  , SUP_G , SUP_H , SUP_J , SUP_K , SUP_L  , ______, ______ , ______ ,
+      ______          , SUP_Z , SUP_X , SUP_C , SUP_V  , SUP_B , SUP_N , SUP_M , ______, SUP_DOT, ______, ______ , ______ ,
+      ______          , ______, ______, ______, ______ , ______, ______, ______, ______
       ),
 };
