@@ -27,6 +27,7 @@ user_config_t user_config;
 #define _ACCENT 3
 #define _ASCII 4
 #define _SUPERSCRIPT 5
+#define _MAD 6
 
 // Custom keycodes
 enum custom_keycodes {
@@ -105,6 +106,34 @@ enum custom_keycodes {
   SUP_MIN,
   SUP_EQL,
   SUP_DOT,
+
+  // MAD
+  MAD_A,
+  MAD_B,
+  MAD_C,
+  MAD_D,
+  MAD_E,
+  MAD_F,
+  MAD_G,
+  MAD_H,
+  MAD_I,
+  MAD_J,
+  MAD_K,
+  MAD_L,
+  MAD_M,
+  MAD_N,
+  MAD_O,
+  MAD_P,
+  MAD_Q,
+  MAD_R,
+  MAD_S,
+  MAD_T,
+  MAD_U,
+  MAD_V,
+  MAD_W,
+  MAD_X,
+  MAD_Y,
+  MAD_Z,
 };
 
 enum rgb_status {
@@ -355,6 +384,10 @@ uint32_t layer_state_set_user(uint32_t state) {
   int brightness = (use_mac ? brightness_mac : brightness_unix) * 32 + SHIFT_BRIGHTNESS;
 
   switch(biton32(state)) {
+    case _MAD:
+      rgblight_sethsv_noeeprom(0, 255, brightness);
+      rgblight_mode_noeeprom(15);
+      break;
     case _SUPERSCRIPT:
       rgblight_sethsv_noeeprom(16 * 3, 255, brightness);
       rgblight_mode_noeeprom(15);
@@ -371,6 +404,197 @@ uint32_t layer_state_set_user(uint32_t state) {
 }
 
 // Main Loop
+bool process_record_user_MAD(uint16_t keycode, keyrecord_t *record) {
+  /* bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT)); */
+  if (record->event.pressed) {
+    int uppercase = rand() % 2 == 0;
+    switch (keycode) {
+      case MAD_A:
+        if (uppercase) {
+          SEND_STRING("A");
+        } else {
+          SEND_STRING("a");
+        }
+        return false;
+      case MAD_B:
+        if (uppercase) {
+          SEND_STRING("B");
+        } else {
+          SEND_STRING("b");
+        }
+        return false;
+      case MAD_C:
+        if (uppercase) {
+          SEND_STRING("C");
+        } else {
+          SEND_STRING("c");
+        }
+        return false;
+      case MAD_D:
+        if (uppercase) {
+          SEND_STRING("D");
+        } else {
+          SEND_STRING("d");
+        }
+        return false;
+      case MAD_E:
+        if (uppercase) {
+          SEND_STRING("E");
+        } else {
+          SEND_STRING("e");
+        }
+        return false;
+      case MAD_F:
+        if (uppercase) {
+          SEND_STRING("F");
+        } else {
+          SEND_STRING("f");
+        }
+        return false;
+      case MAD_G:
+        if (uppercase) {
+          SEND_STRING("G");
+        } else {
+          SEND_STRING("g");
+        }
+        return false;
+      case MAD_H:
+        if (uppercase) {
+          SEND_STRING("H");
+        } else {
+          SEND_STRING("h");
+        }
+        return false;
+      case MAD_I:
+        if (uppercase) {
+          SEND_STRING("I");
+        } else {
+          SEND_STRING("i");
+        }
+        return false;
+      case MAD_J:
+        if (uppercase) {
+          SEND_STRING("J");
+        } else {
+          SEND_STRING("j");
+        }
+        return false;
+      case MAD_K:
+        if (uppercase) {
+          SEND_STRING("K");
+        } else {
+          SEND_STRING("k");
+        }
+        return false;
+      case MAD_L:
+        if (uppercase) {
+          SEND_STRING("L");
+        } else {
+          SEND_STRING("l");
+        }
+        return false;
+      case MAD_M:
+        if (uppercase) {
+          SEND_STRING("M");
+        } else {
+          SEND_STRING("m");
+        }
+        return false;
+      case MAD_N:
+        if (uppercase) {
+          SEND_STRING("N");
+        } else {
+          SEND_STRING("n");
+        }
+        return false;
+      case MAD_O:
+        if (uppercase) {
+          SEND_STRING("O");
+        } else {
+          SEND_STRING("o");
+        }
+        return false;
+      case MAD_P:
+        if (uppercase) {
+          SEND_STRING("P");
+        } else {
+          SEND_STRING("p");
+        }
+        return false;
+      case MAD_Q:
+        if (uppercase) {
+          SEND_STRING("Q");
+        } else {
+          SEND_STRING("q");
+        }
+        return false;
+      case MAD_R:
+        if (uppercase) {
+          SEND_STRING("R");
+        } else {
+          SEND_STRING("r");
+        }
+        return false;
+      case MAD_S:
+        if (uppercase) {
+          SEND_STRING("S");
+        } else {
+          SEND_STRING("s");
+        }
+        return false;
+      case MAD_T:
+        if (uppercase) {
+          SEND_STRING("T");
+        } else {
+          SEND_STRING("t");
+        }
+        return false;
+      case MAD_U:
+        if (uppercase) {
+          SEND_STRING("U");
+        } else {
+          SEND_STRING("u");
+        }
+        return false;
+      case MAD_V:
+        if (uppercase) {
+          SEND_STRING("V");
+        } else {
+          SEND_STRING("v");
+        }
+        return false;
+      case MAD_W:
+        if (uppercase) {
+          SEND_STRING("W");
+        } else {
+          SEND_STRING("w");
+        }
+        return false;
+      case MAD_X:
+        if (uppercase) {
+          SEND_STRING("X");
+        } else {
+          SEND_STRING("x");
+        }
+        return false;
+      case MAD_Y:
+        if (uppercase) {
+          SEND_STRING("Y");
+        } else {
+          SEND_STRING("y");
+        }
+        return false;
+      case MAD_Z:
+        if (uppercase) {
+          SEND_STRING("Z");
+        } else {
+          SEND_STRING("z");
+        }
+        return false;
+    }
+  }
+  return false;
+}
 bool process_record_user_SUPERSCRIPT(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
   if (record->event.pressed) {
@@ -643,9 +867,6 @@ bool process_record_user_ACCENT(uint16_t keycode, keyrecord_t *record) {
 }
 bool process_record_user_OTHER(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    case 'a' ... 'z':
-      if (record->event.pressed) {
-      }
     case CHANGE_OS:
       if (!record->event.pressed) {
         change_OS();
@@ -666,6 +887,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       process_record_user_ACCENT(keycode, record) ||
       process_record_user_OTHER(keycode, record) ||
       process_record_user_SUPERSCRIPT(keycode, record) ||
+      process_record_user_MAD(keycode, record) ||
       true
   );
 }
@@ -679,7 +901,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |   Tab     |   Q   |   W   |   E   |   R   |   T   |   Y   |   U   |   I   |   O   |   P   |   [   |   ]   |     \     |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |     Esc     |   A   |   S   |   D   |   F   |   G   |   H   |   J   |   K   |   L   |   ;   |   '   |      Enter      |
+   * |  Ctrl / Esc |   A   |   S   |   D   |   F   |   G   |   H   |   J   |   K   |   L   |   ;   |   '   |      Enter      |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |    Shift        |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |   ,   |   .   |   /   |    Shift    |  Del  |
    * |-----------------------------------------------------------------------------------------------------------------------+
@@ -701,7 +923,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |   Tab     |   Q   |   W   |   E   |   R   |   T   |   Y   |   U   |   I   |   O   |   P   |   [   |   ]   |     \     |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |     Esc     |   A   |   S   |   D   |   F   |   G   |   H   |   J   |   K   |   L   |   ;   |   '   |      Enter      |
+   * |  Ctrl / Esc |   A   |   S   |   D   |   F   |   G   |   H   |   J   |   K   |   L   |   ;   |   '   |      Enter      |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |    Shift        |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |   ,   |   .   |   /   |    Shift    |  Del  |
    * |-----------------------------------------------------------------------------------------------------------------------+
@@ -754,11 +976,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_ACCENT] = LAYOUT_60_split_rshift_5x1u(
-        REG_GRV          ,______,______,______     ,______,______,REG_CIR,______,______ ,______,______ ,______ ,______ ,______,
-        ______           ,______,______,REG_E      ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______ ,______ ,______,
-        TO(_SUPERSCRIPT) ,REG_A ,______,______     ,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU,______ ,
-        ______           ,______,______,REG_C      ,______,______,REG_N  ,______,REG_CED,______,______ ,______ ,______ ,
-        ______           ,______,______,OSL(_ASCII),______,______,______ ,______,______
+        REG_GRV  ,______,______,______     ,______,______,REG_CIR,______,______ ,______,______ ,______           ,______ ,______,
+        ______   ,______,______,REG_E      ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______           ,______ ,______,
+        TO(_MAD) ,REG_A ,______,______     ,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU          ,______ ,
+        ______   ,______,______,REG_C      ,______,______,REG_N  ,______,REG_CED,______,______ ,TO(_SUPERSCRIPT) ,______ ,
+        ______   ,______,______,OSL(_ASCII),______,______,______ ,______,______
       ),
 
   /* ASCII Layer
@@ -803,5 +1025,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       TG(_SUPERSCRIPT), SUP_A , SUP_S , SUP_D , SUP_F  , SUP_G , SUP_H , SUP_J , SUP_K , SUP_L  , ______, ______ , ______ ,
       ______          , SUP_Z , SUP_X , SUP_C , SUP_V  , SUP_B , SUP_N , SUP_M , ______, SUP_DOT, ______, ______ , ______ ,
       ______          , ______, ______, ______, ______ , ______, ______, ______, ______
+      ),
+
+  /* MAD Layer
+   * ,-----------------------------------------------------------------------------------------------------------------------.
+   * |       |       |       |       |       |       |       |       |       |       |       |       |       |               |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |           |       |       |       |       |       |       |       |       |       |       |       |       |           |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |             |       |       |       |       |       |       |       |       |       |       |       |                 |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |                 |       |       |       |       |       |       |       |       |       |       |             |       |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |         |         |         |                                                 |       |       |       |       |       |
+   * `-----------------------------------------------------------------------------------------------------------------------'
+   */
+
+  [_MAD] = LAYOUT_60_split_rshift_5x1u(
+      ______  , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ , ______,
+      ______  , MAD_Q , MAD_W , MAD_E , MAD_R  , MAD_T , MAD_Y , MAD_U , MAD_I , MAD_O  , MAD_P , ______ , ______ , ______,
+      TG(_MAD), MAD_A , MAD_S , MAD_D , MAD_F  , MAD_G , MAD_H , MAD_J , MAD_K , MAD_L  , ______, ______ , ______ ,
+      ______  , MAD_Z , MAD_X , MAD_C , MAD_V  , MAD_B , MAD_N , MAD_M , ______, ______ , ______, ______ , ______ ,
+      ______  , ______, ______, ______, ______ , ______, ______, ______, ______
       ),
 };
