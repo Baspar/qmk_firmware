@@ -27,7 +27,8 @@ user_config_t user_config;
 #define _ACCENT 3
 #define _ASCII 4
 #define _SUPERSCRIPT 5
-#define _MAD 6
+#define _REVERSE 6
+#define _MAD 7
 
 // Custom keycodes
 enum custom_keycodes {
@@ -57,6 +58,7 @@ enum custom_keycodes {
   RGB_STP,
 
   // ASCII
+  ANGRY,
   MEH,
   FLIP_TABLE,
   LENNY,
@@ -134,6 +136,34 @@ enum custom_keycodes {
   MAD_X,
   MAD_Y,
   MAD_Z,
+
+  // REV
+  REV_A,
+  REV_B,
+  REV_C,
+  REV_D,
+  REV_E,
+  REV_F,
+  REV_G,
+  REV_H,
+  REV_I,
+  REV_J,
+  REV_K,
+  REV_L,
+  REV_M,
+  REV_N,
+  REV_O,
+  REV_P,
+  REV_Q,
+  REV_R,
+  REV_S,
+  REV_T,
+  REV_U,
+  REV_V,
+  REV_W,
+  REV_X,
+  REV_Y,
+  REV_Z,
 };
 
 enum rgb_status {
@@ -392,6 +422,10 @@ uint32_t layer_state_set_user(uint32_t state) {
       rgblight_sethsv_noeeprom(16 * 3, 255, brightness);
       rgblight_mode_noeeprom(15);
       break;
+    case _REVERSE:
+      rgblight_sethsv_noeeprom(16 * 3, 255, brightness);
+      rgblight_mode_noeeprom(19);
+      break;
     case _ASCII:
       rgblight_sethsv_noeeprom(0, 0, brightness);
       rgblight_mode_noeeprom(15);
@@ -404,6 +438,92 @@ uint32_t layer_state_set_user(uint32_t state) {
 }
 
 // Main Loop
+bool process_record_user_REVERSE(uint16_t keycode, keyrecord_t *record) {
+  bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
+  if (record->event.pressed) {
+    switch (keycode) {
+      case REV_A:
+        send_unicode_hex_string(shift_pressed ? "2C6F" : "0250");
+        return false;
+      case REV_B:
+        send_unicode_hex_string(shift_pressed ? "A4ED" : "0071");
+        return false;
+      case REV_C:
+        send_unicode_hex_string(shift_pressed ? "A4DB" : "0254");
+        return false;
+      case REV_D:
+        send_unicode_hex_string(shift_pressed ? "A4F7" : "0070");
+        return false;
+      case REV_E:
+        send_unicode_hex_string(shift_pressed ? "018E" : "01DD");
+        return false;
+      case REV_F:
+        send_unicode_hex_string(shift_pressed ? "A4DE" : "025F");
+        return false;
+      case REV_G:
+        send_unicode_hex_string(shift_pressed ? "A4E8" : "0253");
+        return false;
+      case REV_H:
+        send_unicode_hex_string(shift_pressed ? "0048" : "0265");
+        return false;
+      case REV_I:
+        send_unicode_hex_string(shift_pressed ? "0049" : "1D09");
+        return false;
+      case REV_J:
+        send_unicode_hex_string(shift_pressed ? "017F" : "017F");
+        return false;
+      case REV_K:
+        send_unicode_hex_string(shift_pressed ? "A4D8" : "029E");
+        return false;
+      case REV_L:
+        send_unicode_hex_string(shift_pressed ? "A4F6" : "0E45");
+        return false;
+      case REV_M:
+        send_unicode_hex_string(shift_pressed ? "0057" : "026F");
+        return false;
+      case REV_N:
+        send_unicode_hex_string(shift_pressed ? "004E" : "0075");
+        return false;
+      case REV_O:
+        send_unicode_hex_string(shift_pressed ? "004F" : "006F");
+        return false;
+      case REV_P:
+        send_unicode_hex_string(shift_pressed ? "A4D2" : "0064");
+        return false;
+      case REV_Q:
+        send_unicode_hex_string(shift_pressed ? "1FF8" : "0062");
+        return false;
+      case REV_R:
+        send_unicode_hex_string(shift_pressed ? "A4E4" : "0279");
+        return false;
+      case REV_S:
+        send_unicode_hex_string(shift_pressed ? "0053" : "0073");
+        return false;
+      case REV_T:
+        send_unicode_hex_string(shift_pressed ? "A4D5" : "0287");
+        return false;
+      case REV_U:
+        send_unicode_hex_string(shift_pressed ? "A4F5" : "006E");
+        return false;
+      case REV_V:
+        send_unicode_hex_string(shift_pressed ? "A4E5" : "028C");
+        return false;
+      case REV_W:
+        send_unicode_hex_string(shift_pressed ? "004D" : "028D");
+        return false;
+      case REV_X:
+        send_unicode_hex_string(shift_pressed ? "0058" : "0078");
+        return false;
+      case REV_Y:
+        send_unicode_hex_string(shift_pressed ? "2144" : "028E");
+        return false;
+      case REV_Z:
+        send_unicode_hex_string(shift_pressed ? "005A" : "007A");
+        return false;
+    }
+  }
+  return false;
+}
 bool process_record_user_MAD(uint16_t keycode, keyrecord_t *record) {
   /* bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT)); */
   if (record->event.pressed) {
@@ -720,6 +840,12 @@ bool process_record_user_SUPERSCRIPT(uint16_t keycode, keyrecord_t *record) {
 bool process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
   switch (keycode) {
+    // ಠ益ಠ
+    case ANGRY:
+      if (record->event.pressed) {
+        send_unicode_hex_string("0CA0 76CA 0CA0");
+      }
+      return false;
     // ¯\_(ツ)_/¯
     case MEH:
       if (record->event.pressed) {
@@ -760,16 +886,16 @@ bool process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
         send_unicode_hex_string("0020 002f 1420 ff61 2038 ff61 141f 005c");
       }
       return false;
-    // ʕ •ᴥ•ʔ
+    // ʕ•ᴥ•ʔ
     case BEAR:
       if (record->event.pressed) {
-        send_unicode_hex_string("0295 0020 2022 1d25 2022 0294");
+        send_unicode_hex_string("0295 2022 1d25 2022 0294");
       }
       return false;
     // ( ͡° ل͜ ͡° )
     case LENNY:
       if (record->event.pressed) {
-        send_unicode_hex_string("0028 0020 0361 00b0 0020 0644 035c 0020 0361 00b0 0029");
+        send_unicode_hex_string("0028 0020 0361 00B0 0020 035C 0296 0020 0361 00B0 0029");
       }
       return false;
     // \( ﾟヮﾟ)/
@@ -888,6 +1014,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       process_record_user_OTHER(keycode, record) ||
       process_record_user_SUPERSCRIPT(keycode, record) ||
       process_record_user_MAD(keycode, record) ||
+      process_record_user_REVERSE(keycode, record) ||
       true
   );
 }
@@ -989,7 +1116,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |           |       |  WAT  |       |       |       |  YAY  |       |       |       |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |             |       |  SAD  |       | FLIP  |       | HAPPY |       |       | LENNY |       |       |                 |
+   * |             | ANGRY |  SAD  |       | FLIP  |       | HAPPY |       |       | LENNY |       |       |                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |                 |       |       |  CAT  |       | BEAR  |       |  MEH  |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
@@ -1000,12 +1127,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_ASCII] = LAYOUT_60_split_rshift_5x1u(
       ______, ______, ______, ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
       ______, ______, WAT   , ______, ______    , ______, YAY   , ______, ______, ______, ______, ______, ______, ______,
-      ______, ______, SAD   , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
+      ______, ANGRY , SAD   , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
       ______, ______, ______, CAT   , ______    , BEAR  , ______, MEH   , ______, ______, ______, ______, ______,
       ______, ______, ______, ______, ______    , ______, ______, ______, ______
       ),
 
-  /* ASCII Layer
+  /* SUPERSCRIPT Layer
    * ,-----------------------------------------------------------------------------------------------------------------------.
    * |       |   ¹   |   ²   |   ³   |   ⁴   |   ⁵   |   ⁶   |   ⁷   |   ⁸   |   ⁹   |   ⁰   |   ⁻   | ⁼ ⁺   |               |
    * |-----------------------------------------------------------------------------------------------------------------------+
@@ -1020,22 +1147,44 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_SUPERSCRIPT] = LAYOUT_60_split_rshift_5x1u(
-      ______          , SUP_1 , SUP_2 , SUP_3 , SUP_4  , SUP_5 , SUP_6 , SUP_7 , SUP_8 , SUP_9  , SUP_0 , SUP_MIN, SUP_EQL, ______,
-      ______          , ______, SUP_W , SUP_E , SUP_R  , SUP_T , SUP_Y , SUP_U , SUP_I , SUP_O  , SUP_P , ______ , ______ , ______,
-      TG(_SUPERSCRIPT), SUP_A , SUP_S , SUP_D , SUP_F  , SUP_G , SUP_H , SUP_J , SUP_K , SUP_L  , ______, ______ , ______ ,
-      ______          , SUP_Z , SUP_X , SUP_C , SUP_V  , SUP_B , SUP_N , SUP_M , ______, SUP_DOT, ______, ______ , ______ ,
+      ______          , SUP_1 , SUP_2 , SUP_3 , SUP_4  , SUP_5 , SUP_6 , SUP_7 , SUP_8 , SUP_9  , SUP_0 , SUP_MIN      , SUP_EQL, ______,
+      ______          , ______, SUP_W , SUP_E , SUP_R  , SUP_T , SUP_Y , SUP_U , SUP_I , SUP_O  , SUP_P , ______       , ______ , ______,
+      TG(_SUPERSCRIPT), SUP_A , SUP_S , SUP_D , SUP_F  , SUP_G , SUP_H , SUP_J , SUP_K , SUP_L  , ______, ______       , ______ ,
+      ______          , SUP_Z , SUP_X , SUP_C , SUP_V  , SUP_B , SUP_N , SUP_M , ______, SUP_DOT, ______, TO(_REVERSE) , ______ ,
       ______          , ______, ______, ______, ______ , ______, ______, ______, ______
+      ),
+
+  /* REVERSE Layer
+   * ,-----------------------------------------------------------------------------------------------------------------------.
+   * |       |   ¹   |   ²   |   ³   |   ⁴   |   ⁵   |   ⁶   |   ⁷   |   ⁸   |   ⁹   |   ⁰   |   ⁻   | ⁼ ⁺   |               |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |           |       |   ʷ   |   ᵉ   |   ʳ   |   ᵗ   |   ʸ   |   ᵘ   |   ⁱ   |   ᵒ   |   ᵖ   |       |       |           |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |  _DEFAULT   |   ᵃ   |   ˢ   |   ᵈ   |   ᶠ   |   ᵍ   |   ʰ   |   ʲ   |   ᵏ   |   ˡ   |       |       |                 |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |                 |   ᶻ   |   ˣ   |   ᶜ   |   ᵛ   |   ᵇ   |   ⁿ   |   ᵐ   |       |       |       |             |       |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |         |         |         |                                                 |       |       |       |       |       |
+   * `-----------------------------------------------------------------------------------------------------------------------'
+   */
+
+  [_REVERSE] = LAYOUT_60_split_rshift_5x1u(
+      ______      , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______       , ______  , ______,
+      ______      , REV_Q  , REV_W  , REV_E  , REV_R  , REV_T  , REV_Y  , REV_U  , REV_I  , REV_O  , REV_P  , ______       , ______  , ______,
+      TG(_REVERSE), REV_A  , REV_S  , REV_D  , REV_F  , REV_G  , REV_H  , REV_J  , REV_K  , REV_L  , ______ , ______       , ______  ,
+      ______      , REV_Z  , REV_X  , REV_C  , REV_V  , REV_B  , REV_N  , REV_M  , ______ , ______ , ______ , TG(_REVERSE) , ______  ,
+      ______      , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______
       ),
 
   /* MAD Layer
    * ,-----------------------------------------------------------------------------------------------------------------------.
    * |       |       |       |       |       |       |       |       |       |       |       |       |       |               |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |       |       |       |       |       |       |       |       |       |       |       |       |           |
+   * |           |   Q   |   W   |   E   |   R   |   T   |   Y   |   U   |   I   |   O   |   P   |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |             |       |       |       |       |       |       |       |       |       |       |       |                 |
+   * |  _DEFAULT   |   A   |   S   |   D   |   F   |   G   |   H   |   J   |   K   |   L   |       |       |                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |       |       |       |       |       |       |       |       |       |       |             |       |
+   * |                 |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |         |         |         |                                                 |       |       |       |       |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
