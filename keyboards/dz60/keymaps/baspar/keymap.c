@@ -437,473 +437,131 @@ uint32_t layer_state_set_user(uint32_t state) {
   return state;
 }
 
+// Special KeyCodes
+char* REVERSE_CODES[] = {
+  "2C6F", "0250", // Ɐ / ɐ
+  "A4ED", "0071", // ꓭ / q
+  "A4DB", "0254", // ꓛ / ɔ
+  "A4F7", "0070", // ꓷ / p
+  "018E", "01DD", // Ǝ / ǝ
+  "A4DE", "025F", // ꓞ / ɟ
+  "A4E8", "0253", // ꓨ / ɓ
+  "0048", "0265", // H / ɥ
+  "0049", "1D09", // I / ᴉ
+  "017F", "017F", // ſ / ſ
+  "A4D8", "029E", // ꓘ / ʞ
+  "A4F6", "0E45", // ꓶ / ๅ
+  "0057", "026F", // W / ɯ
+  "004E", "0075", // N / u
+  "004F", "006F", // O / o
+  "A4D2", "0064", // ꓒ / d
+  "1FF8", "0062", // Ὸ / b
+  "A4E4", "0279", // ꓤ / ɹ
+  "0053", "0073", // S / s
+  "A4D5", "0287", // ꓕ / ʇ
+  "A4F5", "006E", // ꓵ / n
+  "A4E5", "028C", // ꓥ / ʌ
+  "004D", "028D", // M / ʍ
+  "0058", "0078", // X / x
+  "2144", "028E", // ⅄ / ʎ
+  "005A", "007A", // Z / z
+};
+char* ASCII_CODES[] = {
+  // ಠ益ಠ
+  "0CA0 76CA 0CA0", "0CA0 76CA 0CA0",
+  // ¯\_(ツ)_/¯
+  "00AF 005C 005F 0028 30C4 0029 005F 002F 00AF", "00AF 005C 005F 0028 30C4 0029 005F 002F 00AF",
+  // (╯°□°）╯︵ ┻━┻) / (ヘ･_･)ヘ┳━┳
+  "0028 256F 00B0 25A1 00B0 FF09 256F FE35 0020 253B 2501 253B", "0028 30D8 FF65 005F FF65 0029 30D8 2533 2501 2533",
+  // ( ͡° ل͜ ͡° )
+  "0028 0020 0361 00B0 0020 035C 0296 0020 0361 00B0 0029", "0028 0020 0361 00B0 0020 035C 0296 0020 0361 00B0 0029",
+  // ಠ_ಠ
+  "0ca0 005f 0ca0", "0ca0 005f 0ca0",
+  // ᕕ( ᐛ  )ᕗ
+  "1555 0028 0020 141b 0020 0029 1557", "1555 0028 0020 141b 0020 0029 1557",
+  // ʕ•ᴥ•ʔ
+  "0295 2022 1d25 2022 0294", "0295 2022 1d25 2022 0294",
+  // /ᐠ｡‸｡ᐟ\_
+  "0020 002f 1420 ff61 2038 ff61 141f 005c", "0020 002f 1420 ff61 2038 ff61 141f 005c",
+  // ಥ_ಥ
+  "0ca5 005f 0ca5", "0ca5 005f 0ca5",
+  // \( ﾟヮﾟ)/
+  "005c 0028 0020 ff9f 30ee ff9f 0029 002f", "005c 0028 0020 ff9f 30ee ff9f 0029 002f",
+};
+char* SUPERSCRIPT_CODES[] = {
+  "1D43", "1D43", // ᵃ
+  "1D47", "1D47", // ᵇ
+  "1D9C", "1D9C", // ᶜ
+  "1D48", "1D48", // ᵈ
+  "1D49", "1D49", // ᵉ
+  "1DA0", "1DA0", // ᶠ
+  "1D4D", "1D4D", // ᵍ
+  "02B0", "02B0", // ʰ
+  "2071", "2071", // ⁱ
+  "02B2", "02B2", // ʲ
+  "1D4F", "1D4F", // ᵏ
+  "02E1", "02E1", // ˡ
+  "1D50", "1D50", // ᵐ
+  "207F", "207F", // ⁿ
+  "1D52", "1D52", // ᵒ
+  "1D56", "1D56", // ᵖ
+  "02B3", "02B3", // ʳ
+  "02E2", "02E2", // ˢ
+  "1D57", "1D57", // ᵗ
+  "1D58", "1D58", // ᵘ
+  "1D5B", "1D5B", // ᵛ
+  "02B7", "02B7", // ʷ
+  "02E3", "02E3", // ˣ
+  "02B8", "02B8", // ʸ
+  "1DBB", "1DBB", // ᶻ
+  "00B9", "00B9", // ¹
+  "00B2", "00B2", // ²
+  "00B3", "00B3", // ³
+  "2074", "2074", // ⁴
+  "2075", "2075", // ⁵
+  "2076", "2076", // ⁶
+  "2077", "2077", // ⁷
+  "2078", "2078", // ⁸
+  "2079", "207D", // ⁹ / ⁽
+  "2070", "207E", // ⁰ / ⁾
+  "207B", "207B", // ⁻
+  "207C", "207A", // ⁺ / ⁼
+  "22C5", "22C5", // ⋅
+};
+
 // Main Loop
 bool process_record_user_REVERSE(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  if (record->event.pressed) {
-    switch (keycode) {
-      case REV_A:
-        send_unicode_hex_string(shift_pressed ? "2C6F" : "0250");
-        return false;
-      case REV_B:
-        send_unicode_hex_string(shift_pressed ? "A4ED" : "0071");
-        return false;
-      case REV_C:
-        send_unicode_hex_string(shift_pressed ? "A4DB" : "0254");
-        return false;
-      case REV_D:
-        send_unicode_hex_string(shift_pressed ? "A4F7" : "0070");
-        return false;
-      case REV_E:
-        send_unicode_hex_string(shift_pressed ? "018E" : "01DD");
-        return false;
-      case REV_F:
-        send_unicode_hex_string(shift_pressed ? "A4DE" : "025F");
-        return false;
-      case REV_G:
-        send_unicode_hex_string(shift_pressed ? "A4E8" : "0253");
-        return false;
-      case REV_H:
-        send_unicode_hex_string(shift_pressed ? "0048" : "0265");
-        return false;
-      case REV_I:
-        send_unicode_hex_string(shift_pressed ? "0049" : "1D09");
-        return false;
-      case REV_J:
-        send_unicode_hex_string(shift_pressed ? "017F" : "017F");
-        return false;
-      case REV_K:
-        send_unicode_hex_string(shift_pressed ? "A4D8" : "029E");
-        return false;
-      case REV_L:
-        send_unicode_hex_string(shift_pressed ? "A4F6" : "0E45");
-        return false;
-      case REV_M:
-        send_unicode_hex_string(shift_pressed ? "0057" : "026F");
-        return false;
-      case REV_N:
-        send_unicode_hex_string(shift_pressed ? "004E" : "0075");
-        return false;
-      case REV_O:
-        send_unicode_hex_string(shift_pressed ? "004F" : "006F");
-        return false;
-      case REV_P:
-        send_unicode_hex_string(shift_pressed ? "A4D2" : "0064");
-        return false;
-      case REV_Q:
-        send_unicode_hex_string(shift_pressed ? "1FF8" : "0062");
-        return false;
-      case REV_R:
-        send_unicode_hex_string(shift_pressed ? "A4E4" : "0279");
-        return false;
-      case REV_S:
-        send_unicode_hex_string(shift_pressed ? "0053" : "0073");
-        return false;
-      case REV_T:
-        send_unicode_hex_string(shift_pressed ? "A4D5" : "0287");
-        return false;
-      case REV_U:
-        send_unicode_hex_string(shift_pressed ? "A4F5" : "006E");
-        return false;
-      case REV_V:
-        send_unicode_hex_string(shift_pressed ? "A4E5" : "028C");
-        return false;
-      case REV_W:
-        send_unicode_hex_string(shift_pressed ? "004D" : "028D");
-        return false;
-      case REV_X:
-        send_unicode_hex_string(shift_pressed ? "0058" : "0078");
-        return false;
-      case REV_Y:
-        send_unicode_hex_string(shift_pressed ? "2144" : "028E");
-        return false;
-      case REV_Z:
-        send_unicode_hex_string(shift_pressed ? "005A" : "007A");
-        return false;
-    }
+  if (record->event.pressed && keycode >= REV_A && keycode <= REV_Z) {
+    char* code = REVERSE_CODES[(keycode - REV_A) * 2 + (shift_pressed ? 1 : 0)];
+    send_unicode_hex_string(code);
   }
   return false;
 }
 bool process_record_user_MAD(uint16_t keycode, keyrecord_t *record) {
-  /* bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT)); */
-  if (record->event.pressed) {
+  if (record->event.pressed && keycode >= MAD_A && keycode <= MAD_Z) {
     int uppercase = rand() % 2 == 0;
-    switch (keycode) {
-      case MAD_A:
-        if (uppercase) {
-          SEND_STRING("A");
-        } else {
-          SEND_STRING("a");
-        }
-        return false;
-      case MAD_B:
-        if (uppercase) {
-          SEND_STRING("B");
-        } else {
-          SEND_STRING("b");
-        }
-        return false;
-      case MAD_C:
-        if (uppercase) {
-          SEND_STRING("C");
-        } else {
-          SEND_STRING("c");
-        }
-        return false;
-      case MAD_D:
-        if (uppercase) {
-          SEND_STRING("D");
-        } else {
-          SEND_STRING("d");
-        }
-        return false;
-      case MAD_E:
-        if (uppercase) {
-          SEND_STRING("E");
-        } else {
-          SEND_STRING("e");
-        }
-        return false;
-      case MAD_F:
-        if (uppercase) {
-          SEND_STRING("F");
-        } else {
-          SEND_STRING("f");
-        }
-        return false;
-      case MAD_G:
-        if (uppercase) {
-          SEND_STRING("G");
-        } else {
-          SEND_STRING("g");
-        }
-        return false;
-      case MAD_H:
-        if (uppercase) {
-          SEND_STRING("H");
-        } else {
-          SEND_STRING("h");
-        }
-        return false;
-      case MAD_I:
-        if (uppercase) {
-          SEND_STRING("I");
-        } else {
-          SEND_STRING("i");
-        }
-        return false;
-      case MAD_J:
-        if (uppercase) {
-          SEND_STRING("J");
-        } else {
-          SEND_STRING("j");
-        }
-        return false;
-      case MAD_K:
-        if (uppercase) {
-          SEND_STRING("K");
-        } else {
-          SEND_STRING("k");
-        }
-        return false;
-      case MAD_L:
-        if (uppercase) {
-          SEND_STRING("L");
-        } else {
-          SEND_STRING("l");
-        }
-        return false;
-      case MAD_M:
-        if (uppercase) {
-          SEND_STRING("M");
-        } else {
-          SEND_STRING("m");
-        }
-        return false;
-      case MAD_N:
-        if (uppercase) {
-          SEND_STRING("N");
-        } else {
-          SEND_STRING("n");
-        }
-        return false;
-      case MAD_O:
-        if (uppercase) {
-          SEND_STRING("O");
-        } else {
-          SEND_STRING("o");
-        }
-        return false;
-      case MAD_P:
-        if (uppercase) {
-          SEND_STRING("P");
-        } else {
-          SEND_STRING("p");
-        }
-        return false;
-      case MAD_Q:
-        if (uppercase) {
-          SEND_STRING("Q");
-        } else {
-          SEND_STRING("q");
-        }
-        return false;
-      case MAD_R:
-        if (uppercase) {
-          SEND_STRING("R");
-        } else {
-          SEND_STRING("r");
-        }
-        return false;
-      case MAD_S:
-        if (uppercase) {
-          SEND_STRING("S");
-        } else {
-          SEND_STRING("s");
-        }
-        return false;
-      case MAD_T:
-        if (uppercase) {
-          SEND_STRING("T");
-        } else {
-          SEND_STRING("t");
-        }
-        return false;
-      case MAD_U:
-        if (uppercase) {
-          SEND_STRING("U");
-        } else {
-          SEND_STRING("u");
-        }
-        return false;
-      case MAD_V:
-        if (uppercase) {
-          SEND_STRING("V");
-        } else {
-          SEND_STRING("v");
-        }
-        return false;
-      case MAD_W:
-        if (uppercase) {
-          SEND_STRING("W");
-        } else {
-          SEND_STRING("w");
-        }
-        return false;
-      case MAD_X:
-        if (uppercase) {
-          SEND_STRING("X");
-        } else {
-          SEND_STRING("x");
-        }
-        return false;
-      case MAD_Y:
-        if (uppercase) {
-          SEND_STRING("Y");
-        } else {
-          SEND_STRING("y");
-        }
-        return false;
-      case MAD_Z:
-        if (uppercase) {
-          SEND_STRING("Z");
-        } else {
-          SEND_STRING("z");
-        }
-        return false;
-    }
+    char str[] = {
+      (uppercase ? 'A' : 'a') + keycode - MAD_A,
+      '\0'
+    };
+    send_string(str);
   }
   return false;
 }
 bool process_record_user_SUPERSCRIPT(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  if (record->event.pressed) {
-    switch (keycode) {
-      case SUP_A:
-        send_unicode_hex_string("1D43");
-        return false;
-      case SUP_B:
-        send_unicode_hex_string("1D47");
-        return false;
-      case SUP_C:
-        send_unicode_hex_string("1D9C");
-        return false;
-      case SUP_D:
-        send_unicode_hex_string("1D48");
-        return false;
-      case SUP_E:
-        send_unicode_hex_string("1D49");
-        return false;
-      case SUP_F:
-        send_unicode_hex_string("1DA0");
-        return false;
-      case SUP_G:
-        send_unicode_hex_string("1D4D");
-        return false;
-      case SUP_H:
-        send_unicode_hex_string("02B0");
-        return false;
-      case SUP_I:
-        send_unicode_hex_string("2071");
-        return false;
-      case SUP_J:
-        send_unicode_hex_string("02B2");
-        return false;
-      case SUP_K:
-        send_unicode_hex_string("1D4F");
-        return false;
-      case SUP_L:
-        send_unicode_hex_string("02E1");
-        return false;
-      case SUP_M:
-        send_unicode_hex_string("1D50");
-        return false;
-      case SUP_N:
-        send_unicode_hex_string("207F");
-        return false;
-      case SUP_O:
-        send_unicode_hex_string("1D52");
-        return false;
-      case SUP_P:
-        send_unicode_hex_string("1D56");
-        return false;
-      case SUP_R:
-        send_unicode_hex_string("02B3");
-        return false;
-      case SUP_S:
-        send_unicode_hex_string("02E2");
-        return false;
-      case SUP_T:
-        send_unicode_hex_string("1D57");
-        return false;
-      case SUP_U:
-        send_unicode_hex_string("1D58");
-        return false;
-      case SUP_V:
-        send_unicode_hex_string("1D5B");
-        return false;
-      case SUP_W:
-        send_unicode_hex_string("02B7");
-        return false;
-      case SUP_X:
-        send_unicode_hex_string("02E3");
-        return false;
-      case SUP_Y:
-        send_unicode_hex_string("02B8");
-        return false;
-      case SUP_Z:
-        send_unicode_hex_string("1DBB");
-        return false;
-      case SUP_0:
-        send_unicode_hex_string("2070");
-        return false;
-      case SUP_1:
-        send_unicode_hex_string("00B9");
-        return false;
-      case SUP_2:
-        send_unicode_hex_string("00B2");
-        return false;
-      case SUP_3:
-        send_unicode_hex_string("00B3");
-        return false;
-      case SUP_4:
-        send_unicode_hex_string("2074");
-        return false;
-      case SUP_5:
-        send_unicode_hex_string("2075");
-        return false;
-      case SUP_6:
-        send_unicode_hex_string("2076");
-        return false;
-      case SUP_7:
-        send_unicode_hex_string("2077");
-        return false;
-      case SUP_8:
-        send_unicode_hex_string("2078");
-        return false;
-      case SUP_9:
-        send_unicode_hex_string(shift_pressed ? "207D" : "2079");
-        return false;
-      case SUP_MIN:
-        send_unicode_hex_string(shift_pressed ? "207E" : "207B");
-        return false;
-      case SUP_EQL:
-        send_unicode_hex_string(shift_pressed ? "207A" : "207C");
-        return false;
-      case SUP_DOT:
-        send_unicode_hex_string("22C5");
-        return false;
-    }
+  if (record->event.pressed && keycode >= SUP_A && keycode <= SUP_DOT) {
+    char* code = SUPERSCRIPT_CODES[(keycode - SUP_A) * 2 + (shift_pressed ? 1 : 0)];
+    send_unicode_hex_string(code);
   }
   return false;
 }
 bool process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  switch (keycode) {
-    // ಠ益ಠ
-    case ANGRY:
-      if (record->event.pressed) {
-        send_unicode_hex_string("0CA0 76CA 0CA0");
-      }
-      return false;
-    // ¯\_(ツ)_/¯
-    case MEH:
-      if (record->event.pressed) {
-        send_unicode_hex_string("00AF 005C 005F 0028 30C4 0029 005F 002F 00AF");
-      }
-      return false;
-    // (╯°□°）╯︵ ┻━┻) / (ヘ･_･)ヘ┳━┳
-    case FLIP_TABLE:
-      if (record->event.pressed) {
-        if (shift_pressed) {
-          send_unicode_hex_string("0028 30D8 FF65 005F FF65 0029 30D8 2533 2501 2533");
-        } else {
-          send_unicode_hex_string("0028 256F 00B0 25A1 00B0 FF09 256F FE35 0020 253B 2501 253B");
-        }
-      }
-      return false;
-    // ಠ_ಠ
-    case WAT:
-      if (record->event.pressed) {
-        send_unicode_hex_string("0ca0 005f 0ca0");
-      }
-      return false;
-    // ᕕ( ᐛ  )ᕗ
-    case HAPPY:
-      if (record->event.pressed) {
-        send_unicode_hex_string("1555 0028 0020 141b 0020 0029 1557");
-      }
-      return false;
-    // ಥ_ಥ
-    case SAD:
-      if (record->event.pressed) {
-        send_unicode_hex_string("0ca5 005f 0ca5");
-      }
-      return false;
-    // /ᐠ｡‸｡ᐟ\_
-    case CAT:
-      if (record->event.pressed) {
-        send_unicode_hex_string("0020 002f 1420 ff61 2038 ff61 141f 005c");
-      }
-      return false;
-    // ʕ•ᴥ•ʔ
-    case BEAR:
-      if (record->event.pressed) {
-        send_unicode_hex_string("0295 2022 1d25 2022 0294");
-      }
-      return false;
-    // ( ͡° ل͜ ͡° )
-    case LENNY:
-      if (record->event.pressed) {
-        send_unicode_hex_string("0028 0020 0361 00B0 0020 035C 0296 0020 0361 00B0 0029");
-      }
-      return false;
-    // \( ﾟヮﾟ)/
-    case YAY:
-      if (record->event.pressed) {
-        send_unicode_hex_string("005c 0028 0020 ff9f 30ee ff9f 0029 002f");
-      }
-      return false;
+  if (record->event.pressed && keycode >= ANGRY && keycode <= YAY) {
+    char* code = ASCII_CODES[(keycode - ANGRY) * 2 + (shift_pressed ? 1 : 0)];
+    send_unicode_hex_string(code);
   }
   return false;
 }
