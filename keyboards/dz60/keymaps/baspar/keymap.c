@@ -114,34 +114,6 @@ enum custom_keycodes {
   SUP_EQL,
   SUP_DOT,
 
-  // MAD
-  MAD_A,
-  MAD_B,
-  MAD_C,
-  MAD_D,
-  MAD_E,
-  MAD_F,
-  MAD_G,
-  MAD_H,
-  MAD_I,
-  MAD_J,
-  MAD_K,
-  MAD_L,
-  MAD_M,
-  MAD_N,
-  MAD_O,
-  MAD_P,
-  MAD_Q,
-  MAD_R,
-  MAD_S,
-  MAD_T,
-  MAD_U,
-  MAD_V,
-  MAD_W,
-  MAD_X,
-  MAD_Y,
-  MAD_Z,
-
   // REV
   REV_A,
   REV_B,
@@ -565,14 +537,12 @@ enum PROCESS_RESULT process_record_user_REVERSE(uint16_t keycode, keyrecord_t *r
   return CONTINUE;
 }
 enum PROCESS_RESULT process_record_user_MAD(uint16_t keycode, keyrecord_t *record) {
-  if (keycode >= MAD_A && keycode <= MAD_Z) {
+  if (layer_state_is(_MAD) && keycode >= KC_A && keycode <= KC_Z) {
     if (record->event.pressed) {
       int uppercase = rand() % 2 == 0;
-      char str[] = {
-        (uppercase ? 'A' : 'a') + keycode - MAD_A,
-        '\0'
-      };
-      send_string(str);
+      if (uppercase) register_code(KC_LSHIFT);
+      tap_code(keycode);
+      if (uppercase) unregister_code(KC_LSHIFT);
     }
     return RETURN_FALSE;
   }
@@ -691,13 +661,13 @@ enum PROCESS_RESULT process_record_user_ZALGO(uint16_t keycode, keyrecord_t *rec
     }
 
     if (record->event.pressed) {
-      tap_code( keycode );
+      tap_code(keycode);
 
       int number_zalgo_mod = ( rand() % ( MAX_ZALGO_MOD + 1 - MIN_ZALGO_MOD ) ) + MIN_ZALGO_MOD;
       unicode_input_start();
       for (int index = 0; index < number_zalgo_mod; index++) {
         uint16_t hex = ( rand() % ( 0x036F + 1 - 0x0300 ) ) + 0x0300;
-        register_hex( hex );
+        register_hex(hex);
       }
       unicode_input_finish();
 
@@ -909,9 +879,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_MAD] = LAYOUT_60_split_rshift_5x1u(
       ______    , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ , ______,
-      ______    , MAD_Q , MAD_W , MAD_E , MAD_R  , MAD_T , MAD_Y , MAD_U , MAD_I , MAD_O  , MAD_P , ______ , ______ , ______,
-      TO(_ZALGO), MAD_A , MAD_S , MAD_D , MAD_F  , MAD_G , MAD_H , MAD_J , MAD_K , MAD_L  , ______, ______ , ______ ,
-      ______    , MAD_Z , MAD_X , MAD_C , MAD_V  , MAD_B , MAD_N , MAD_M , ______, ______ , ______, ______ , ______ ,
+      ______    , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ , ______,
+      TO(_ZALGO), ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
+      ______    , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
       ______    , ______, ______, ______, ______ , ______, ______, ______, ______
       ),
 
