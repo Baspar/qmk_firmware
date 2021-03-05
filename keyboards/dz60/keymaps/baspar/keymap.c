@@ -17,8 +17,9 @@ user_config_t user_config;
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define CONVERT_TO_UNICODE_(symbol, unicode) if (strcmp(name,symbol) == 0) { send_unicode_hex_string(unicode); }
 #define CONVERT_TO_UNICODE(symbol, unicode) else if (strcmp(name,symbol) == 0) { send_unicode_hex_string(unicode); }
-#define REGISTER_LETTER(letter) if (record->event.pressed) { ALT_LETTER = (letter); check_accent(); } return false;
-#define REGISTER_MOD(modifier) if(record->event.pressed) { ALT_MOD = (modifier); check_accent(); } return false;
+#define REGISTER_LETTER(letter) if (record->event.pressed) { ALT_LETTER = (letter); check_accent(); } return RETURN_FALSE;
+#define REGISTER_MOD(modifier) if(record->event.pressed) { ALT_MOD = (modifier); check_accent(); } return RETURN_FALSE;
+#define MATCH(x) switch (x) { case RETURN_FALSE: return false; case RETURN_TRUE: return true; case CONTINUE: break; }
 
 // Layers
 #define _DEFAULT 0
@@ -540,49 +541,66 @@ char* SUPERSCRIPT_CODES[] = {
 };
 
 // Main Loop
-bool process_record_user_REVERSE(uint16_t keycode, keyrecord_t *record) {
-  bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  if (record->event.pressed && keycode >= REV_A && keycode <= REV_SPACE) {
-    char* code = REVERSE_CODES[(keycode - REV_A) * 2 + (shift_pressed ? 0 : 1)];
-    if (shift_pressed) unregister_code(KC_LSHIFT);
-    if (code[0] == '\\') {
-      send_string(code + 1);
-    } else {
+enum PROCESS_RESULT {
+  CONTINUE = 0,
+  RETURN_TRUE = 1,
+  RETURN_FALSE = 2,
+};
+enum PROCESS_RESULT process_record_user_REVERSE(uint16_t keycode, keyrecord_t *record) {
+  if (keycode >= REV_A && keycode <= REV_SPACE) {
+    bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
+    if (record->event.pressed) {
+      char* code = REVERSE_CODES[(keycode - REV_A) * 2 + (shift_pressed ? 0 : 1)];
+      if (shift_pressed) unregister_code(KC_LSHIFT);
+      if (code[0] == '\\') {
+        send_string(code + 1);
+      } else {
+        send_unicode_hex_string(code);
+      }
+      SEND_STRING(SS_TAP(X_LEFT));
+      if (shift_pressed) register_code(KC_LSHIFT);
+    }
+    return RETURN_FALSE;
+  }
+  return CONTINUE;
+}
+enum PROCESS_RESULT process_record_user_MAD(uint16_t keycode, keyrecord_t *record) {
+  if (keycode >= MAD_A && keycode <= MAD_Z) {
+    if (record->event.pressed) {
+      int uppercase = rand() % 2 == 0;
+      char str[] = {
+        (uppercase ? 'A' : 'a') + keycode - MAD_A,
+        '\0'
+      };
+      send_string(str);
+    }
+    return RETURN_FALSE;
+  }
+  return CONTINUE;
+}
+enum PROCESS_RESULT process_record_user_SUPERSCRIPT(uint16_t keycode, keyrecord_t *record) {
+  if (keycode >= SUP_A && keycode <= SUP_DOT) {
+    bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
+    if (record->event.pressed) {
+      char* code = SUPERSCRIPT_CODES[(keycode - SUP_A) * 2 + (shift_pressed ? 1 : 0)];
       send_unicode_hex_string(code);
     }
-    SEND_STRING(SS_TAP(X_LEFT));
-    if (shift_pressed) register_code(KC_LSHIFT);
+    return RETURN_FALSE;
   }
-  return false;
+  return CONTINUE;
 }
-bool process_record_user_MAD(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed && keycode >= MAD_A && keycode <= MAD_Z) {
-    int uppercase = rand() % 2 == 0;
-    char str[] = {
-      (uppercase ? 'A' : 'a') + keycode - MAD_A,
-      '\0'
-    };
-    send_string(str);
+enum PROCESS_RESULT process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
+  if (keycode >= ANGRY && keycode <= YAY) {
+    bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
+    if (record->event.pressed) {
+      char* code = ASCII_CODES[(keycode - ANGRY) * 2 + (shift_pressed ? 1 : 0)];
+      send_unicode_hex_string(code);
+    }
+    return RETURN_FALSE;
   }
-  return false;
+  return CONTINUE;
 }
-bool process_record_user_SUPERSCRIPT(uint16_t keycode, keyrecord_t *record) {
-  bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  if (record->event.pressed && keycode >= SUP_A && keycode <= SUP_DOT) {
-    char* code = SUPERSCRIPT_CODES[(keycode - SUP_A) * 2 + (shift_pressed ? 1 : 0)];
-    send_unicode_hex_string(code);
-  }
-  return false;
-}
-bool process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
-  bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
-  if (record->event.pressed && keycode >= ANGRY && keycode <= YAY) {
-    char* code = ASCII_CODES[(keycode - ANGRY) * 2 + (shift_pressed ? 1 : 0)];
-    send_unicode_hex_string(code);
-  }
-  return false;
-}
-bool process_record_user_RGB(uint16_t keycode, keyrecord_t *record) {
+enum PROCESS_RESULT process_record_user_RGB(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
   switch (keycode) {
     // RGB
@@ -593,8 +611,8 @@ bool process_record_user_RGB(uint16_t keycode, keyrecord_t *record) {
         } else {
           change_mode(1);
         }
-        return false;
       }
+      return RETURN_FALSE;
     case RGB_OFF:
       if (!record->event.pressed) {
         if (shift_pressed && rgb_status == ON) {
@@ -608,21 +626,21 @@ bool process_record_user_RGB(uint16_t keycode, keyrecord_t *record) {
           rgb_status = ON;
         }
       }
-      return true;
+      return RETURN_TRUE;
     case DEC_COL:
       if (!record->event.pressed) {
         if (shift_pressed) { change_brightness(-1); } else { change_hue(-1); }
-        return false;
       }
+      return RETURN_FALSE;
     case INC_COL:
       if (!record->event.pressed) {
         if (shift_pressed) { change_brightness(1); } else { change_hue(1); }
-        return false;
       }
+      return RETURN_FALSE;
   }
-  return false;
+  return CONTINUE;
 }
-bool process_record_user_ACCENT(uint16_t keycode, keyrecord_t *record) {
+enum PROCESS_RESULT process_record_user_ACCENT(uint16_t keycode, keyrecord_t *record) {
   bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
   switch (keycode) {
     // Accent
@@ -634,7 +652,7 @@ bool process_record_user_ACCENT(uint16_t keycode, keyrecord_t *record) {
         ALT_LETTER = '\0';
         ALT_MOD = -1;
       }
-      return false;
+      return RETURN_FALSE;
     case REG_GRV:
       REGISTER_MOD(shift_pressed ? REG_TIL : REG_GRV)
     case REG_ACU:
@@ -664,12 +682,12 @@ bool process_record_user_ACCENT(uint16_t keycode, keyrecord_t *record) {
     case REG_N:
       REGISTER_LETTER(shift_pressed ? 'N' : 'n');
   }
-  return false;
+  return CONTINUE;
 }
-bool process_record_user_ZALGO(uint16_t keycode, keyrecord_t *record) {
+enum PROCESS_RESULT process_record_user_ZALGO(uint16_t keycode, keyrecord_t *record) {
   if (layer_state_is(_ZALGO) ) {
     if (keycode < KC_A || ( keycode > KC_0 && keycode < KC_MINUS ) || keycode > KC_SLASH) {
-      return true;
+      return CONTINUE;
     }
 
     if (record->event.pressed) {
@@ -684,20 +702,20 @@ bool process_record_user_ZALGO(uint16_t keycode, keyrecord_t *record) {
       unicode_input_finish();
 
     }
-    return false;
+    return RETURN_FALSE;
   }
 
-  return true;
+  return CONTINUE;
 }
-bool process_record_user_OTHER(uint16_t keycode, keyrecord_t *record) {
+enum PROCESS_RESULT process_record_user_OTHER(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case CHANGE_OS:
       if (!record->event.pressed) {
         change_OS();
       }
-      return false;
+      return RETURN_FALSE;
   }
-  return false;
+  return CONTINUE;
 }
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed && rgb_status == ONE_TIME_OFF) {
@@ -705,17 +723,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     rgblight_enable_noeeprom();
     return false;
   }
-  return (
-      process_record_user_ASCII(keycode, record) ||
-      process_record_user_RGB(keycode, record) ||
-      process_record_user_ACCENT(keycode, record) ||
-      process_record_user_OTHER(keycode, record) ||
-      process_record_user_SUPERSCRIPT(keycode, record) ||
-      process_record_user_MAD(keycode, record) ||
-      process_record_user_REVERSE(keycode, record) ||
-      process_record_user_ZALGO(keycode, record) ||
-      true
-  );
+
+  MATCH(process_record_user_ASCII(keycode, record));
+  MATCH(process_record_user_RGB(keycode, record));
+  MATCH(process_record_user_ACCENT(keycode, record));
+  MATCH(process_record_user_OTHER(keycode, record));
+  MATCH(process_record_user_SUPERSCRIPT(keycode, record));
+  MATCH(process_record_user_MAD(keycode, record));
+  MATCH(process_record_user_REVERSE(keycode, record));
+  MATCH(process_record_user_ZALGO(keycode, record));
+
+  return true;
 }
 
 // Keymap
@@ -855,7 +873,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   /* REVERSE Layer
    * ,-----------------------------------------------------------------------------------------------------------------------.
-   * |       |   ¹   |   ²   |   ³   |   ⁴   |   ⁵   |   ⁶   |   ⁷   |   ⁸   |   ⁹   |   ⁰   |   ⁻   | ⁼ ⁺   |    KC_DEL     |
+   * |       |       |       |       |       |       |       |       |       |       |       |       |       |    KC_DEL     |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |           |  b/Ὸ  |  ʍ/M  |  ǝ/Ǝ  |  ɹ/ꓤ  |  ʇ/ꓕ  |  ʎ/⅄  |  n/ꓵ  |  ᴉ/I  |  o/O  |  d/ꓒ  |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
