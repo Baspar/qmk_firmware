@@ -19,18 +19,18 @@ user_config_t user_config;
 #define CONVERT_TO_UNICODE(symbol, unicode) else if (strcmp(name,symbol) == 0) { send_unicode_hex_string(unicode); }
 #define REGISTER_LETTER(letter) if (record->event.pressed) { ALT_LETTER = (letter); check_accent(); } return RETURN_FALSE;
 #define REGISTER_MOD(modifier) if(record->event.pressed) { ALT_MOD = (modifier); check_accent(); } return RETURN_FALSE;
-#define MATCH(x) switch (x) { case RETURN_FALSE: return false; case RETURN_TRUE: return true; case CONTINUE: break; }
+#define MATCH_OR_CONTINUE(x) switch (x) { case RETURN_FALSE: return false; case RETURN_TRUE: return true; case CONTINUE: break; }
 
 // Layers
 #define _DEFAULT 0
 #define _DEFAULT_MAC 1
 #define _FUNCTION 2
-#define _ACCENT 3
-#define _ASCII 4
-#define _SUPERSCRIPT 5
-#define _REVERSE 6
-#define _MAD 7
-#define _ZALGO 8
+#define _ASCII 3
+#define _SUPERSCRIPT 4
+#define _REVERSE 5
+#define _MAD 6
+#define _ZALGO 7
+#define _ACCENT 8
 
 #define MIN_ZALGO_MOD 2
 #define MAX_ZALGO_MOD 8
@@ -38,6 +38,8 @@ user_config_t user_config;
 // Custom keycodes
 enum custom_keycodes {
   CHANGE_OS = SAFE_RANGE,
+  CYCLE_MAD_LAYERS,
+  CYCLE_UPPER_LAYERS,
 
   // ACCENTS
   ACCENT_LAYER,
@@ -73,6 +75,7 @@ enum custom_keycodes {
   CAT,
   SAD,
   YAY,
+  NO,
 
   // SUPERSCRIPT
   SUP_A,
@@ -385,36 +388,35 @@ void keyboard_post_init_user(void) {
 }
 
 // Special LED color
-uint32_t layer_state_set_user(uint32_t state) {
+void special_mode_color(uint32_t H, uint32_t S,  uint32_t mode) {
   bool use_mac = user_config.use_mac;
   int brightness_mac = user_config.brightnesses % 8;
   int brightness_unix = user_config.brightnesses / 8 % 8;
   int brightness = (use_mac ? brightness_mac : brightness_unix) * 32 + SHIFT_BRIGHTNESS;
 
-  switch(biton32(state)) {
-    case _MAD:
-      rgblight_sethsv_noeeprom(0, 255, brightness);
-      rgblight_mode_noeeprom(15);
-      break;
-    case _ZALGO:
-      rgblight_sethsv_noeeprom(0, 255, brightness);
-      rgblight_mode_noeeprom(19);
-      break;
-    case _SUPERSCRIPT:
-      rgblight_sethsv_noeeprom(16 * 3, 255, brightness);
-      rgblight_mode_noeeprom(15);
-      break;
-    case _REVERSE:
-      rgblight_sethsv_noeeprom(16 * 3, 255, brightness);
-      rgblight_mode_noeeprom(19);
-      break;
-    case _ASCII:
-      rgblight_sethsv_noeeprom(0, 0, brightness);
-      rgblight_mode_noeeprom(15);
-      break;
-    default:
-      update_backlight();
-      break;
+  rgblight_sethsv_noeeprom(H, S, brightness);
+  rgblight_mode_noeeprom(mode);
+}
+uint32_t layer_state_set_user(uint32_t state) {
+  if (IS_LAYER_ON(_MAD)) {
+    special_mode_color(0, 255, 15);
+  } else if (IS_LAYER_ON(_ZALGO)) {
+    special_mode_color(0, 255, 19);
+  } else if (IS_LAYER_ON(_SUPERSCRIPT)) {
+    special_mode_color(16 * 3, 255, 15);
+  } else if (IS_LAYER_ON(_REVERSE)) {
+    special_mode_color(16 * 3, 255, 19);
+  } else {
+    switch(biton32(state)) {
+      case _ASCII:
+        special_mode_color(0, 0, 15);
+        break;
+      case _ACCENT:
+        break;
+      default:
+        update_backlight();
+        break;
+    }
   }
   return state;
 }
@@ -466,10 +468,12 @@ char* ASCII_CODES[] = {
   "0295 2022 1d25 2022 0294", "0295 2022 1d25 2022 0294",
   // /ᐠ｡‸｡ᐟ\_
   "0020 002f 1420 ff61 2038 ff61 141f 005c", "0020 002f 1420 ff61 2038 ff61 141f 005c",
-  // ಥ_ಥ
-  "0ca5 005f 0ca5", "0ca5 005f 0ca5",
+  // ಥ_ಥ / (;´༎ຶД༎ຶ`)`)
+  "0ca5 005f 0ca5", "0028 003b 00b4 0f0e 0eb6 0414 0f0e 0eb6 0060 0029",
   // \( ﾟヮﾟ)/
   "005c 0028 0020 ff9f 30ee ff9f 0029 002f", "005c 0028 0020 ff9f 30ee ff9f 0029 002f",
+  // ಠ╭╮ಠ
+  "0ca0 256d 256e 0ca0", "0ca0 256d 256e 0ca0",
 };
 char* SUPERSCRIPT_CODES[] = {
   "1D43", "1D43", // ᵃ
@@ -560,7 +564,7 @@ enum PROCESS_RESULT process_record_user_SUPERSCRIPT(uint16_t keycode, keyrecord_
   return CONTINUE;
 }
 enum PROCESS_RESULT process_record_user_ASCII(uint16_t keycode, keyrecord_t *record) {
-  if (keycode >= ANGRY && keycode <= YAY) {
+  if (keycode >= ANGRY && keycode <= NO) {
     bool shift_pressed = (keyboard_report->mods & MOD_BIT (KC_LSFT)) || (keyboard_report->mods & MOD_BIT (KC_RSFT));
     if (record->event.pressed) {
       char* code = ASCII_CODES[(keycode - ANGRY) * 2 + (shift_pressed ? 1 : 0)];
@@ -684,6 +688,34 @@ enum PROCESS_RESULT process_record_user_OTHER(uint16_t keycode, keyrecord_t *rec
         change_OS();
       }
       return RETURN_FALSE;
+    case CYCLE_MAD_LAYERS:
+      if (record->event.pressed) {
+        layer_off(_REVERSE);
+        layer_off(_SUPERSCRIPT);
+        if (IS_LAYER_ON(_MAD)) {
+          layer_off(_MAD);
+          layer_on(_ZALGO);
+        } else if (IS_LAYER_ON(_ZALGO)) {
+          layer_off(_ZALGO);
+        } else {
+          layer_on(_MAD);
+        }
+        return RETURN_FALSE;
+      }
+    case CYCLE_UPPER_LAYERS:
+      if (record->event.pressed) {
+        layer_off(_MAD);
+        layer_off(_ZALGO);
+        if (IS_LAYER_ON(_SUPERSCRIPT)) {
+          layer_off(_SUPERSCRIPT);
+          layer_on(_REVERSE);
+        } else if (IS_LAYER_ON(_REVERSE)) {
+          layer_off(_REVERSE);
+        } else {
+          layer_on(_SUPERSCRIPT);
+        }
+        return RETURN_FALSE;
+      }
   }
   return CONTINUE;
 }
@@ -694,14 +726,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return false;
   }
 
-  MATCH(process_record_user_ASCII(keycode, record));
-  MATCH(process_record_user_RGB(keycode, record));
-  MATCH(process_record_user_ACCENT(keycode, record));
-  MATCH(process_record_user_OTHER(keycode, record));
-  MATCH(process_record_user_SUPERSCRIPT(keycode, record));
-  MATCH(process_record_user_MAD(keycode, record));
-  MATCH(process_record_user_REVERSE(keycode, record));
-  MATCH(process_record_user_ZALGO(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_ASCII(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_RGB(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_ACCENT(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_OTHER(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_SUPERSCRIPT(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_MAD(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_REVERSE(keycode, record));
+  MATCH_OR_CONTINUE(process_record_user_ZALGO(keycode, record));
 
   return true;
 }
@@ -775,28 +807,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         CHANGE_OS ,______ ,______ ,KC__MUTE,______ ,KC_HOME,KC_PGDOWN,KC_PGUP     ,KC_END
       ),
 
-  /* Accent Layer
-   * ,-----------------------------------------------------------------------------------------------------------------------.
-   * |REG_GRV|       |       |       |       |       |REG_CIR|       |       |       |       |       |       |               |
-   * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |       |       | REG_E |       |       | REG_Y | REG_U | REG_I | REG_O |       |       |       |           |
-   * |-----------------------------------------------------------------------------------------------------------------------+
-   * |             | REG_A |       |       |       |       |       |       |       |       |REG_TRM|REG_ACU|                 |
-   * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|       |       |             |       |
-   * |-----------------------------------------------------------------------------------------------------------------------+
-   * |         |         |         |                     ASCII                       |       |       |       |       |       |
-   * `-----------------------------------------------------------------------------------------------------------------------'
-   */
-
-  [_ACCENT] = LAYOUT_60_split_rshift_5x1u(
-        REG_GRV  ,______,______,______     ,______,______,REG_CIR,______,______ ,______,______ ,______           ,______ ,______,
-        ______   ,______,______,REG_E      ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______           ,______ ,______,
-        TO(_MAD) ,REG_A ,______,______     ,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU          ,______ ,
-        ______   ,______,______,REG_C      ,______,______,REG_N  ,______,REG_CED,______,______ ,TO(_SUPERSCRIPT) ,______ ,
-        ______   ,______,______,OSL(_ASCII),______,______,______ ,______,______
-      ),
-
   /* ASCII Layer
    * ,-----------------------------------------------------------------------------------------------------------------------.
    * |       |       |       |       |       |       |       |       |       |       |       |       |       |               |
@@ -815,7 +825,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       ______, ______, ______, ______, ______    , ______, ______, ______, ______, ______, ______, ______, ______, ______,
       ______, ______, WAT   , ______, ______    , ______, YAY   , ______, ______, ______, ______, ______, ______, ______,
       ______, ANGRY , SAD   , ______, FLIP_TABLE, ______, HAPPY , ______, ______, LENNY , ______, ______, ______,
-      ______, ______, ______, CAT   , ______    , BEAR  , ______, MEH   , ______, ______, ______, ______, ______,
+      ______, ______, ______, CAT   , ______    , BEAR  , NO    , MEH   , ______, ______, ______, ______, ______,
       ______, ______, ______, ______, ______    , ______, ______, ______, ______
       ),
 
@@ -834,10 +844,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [_SUPERSCRIPT] = LAYOUT_60_split_rshift_5x1u(
-      ______          , SUP_1 , SUP_2 , SUP_3 , SUP_4  , SUP_5 , SUP_6 , SUP_7 , SUP_8 , SUP_9  , SUP_0 , SUP_MIN      , SUP_EQL, ______,
-      ______          , ______, SUP_W , SUP_E , SUP_R  , SUP_T , SUP_Y , SUP_U , SUP_I , SUP_O  , SUP_P , ______       , ______ , ______,
-      TG(_SUPERSCRIPT), SUP_A , SUP_S , SUP_D , SUP_F  , SUP_G , SUP_H , SUP_J , SUP_K , SUP_L  , ______, ______       , ______ ,
-      ______          , SUP_Z , SUP_X , SUP_C , SUP_V  , SUP_B , SUP_N , SUP_M , ______, SUP_DOT, ______, TO(_REVERSE) , ______ ,
+      ______          , SUP_1 , SUP_2 , SUP_3 , SUP_4  , SUP_5 , SUP_6 , SUP_7 , SUP_8 , SUP_9  , SUP_0 , SUP_MIN , SUP_EQL, ______,
+      ______          , ______, SUP_W , SUP_E , SUP_R  , SUP_T , SUP_Y , SUP_U , SUP_I , SUP_O  , SUP_P , ______  , ______ , ______,
+      TG(_SUPERSCRIPT), SUP_A , SUP_S , SUP_D , SUP_F  , SUP_G , SUP_H , SUP_J , SUP_K , SUP_L  , ______, ______  , ______ ,
+      ______          , SUP_Z , SUP_X , SUP_C , SUP_V  , SUP_B , SUP_N , SUP_M , ______, SUP_DOT, ______, ______  , ______ ,
       ______          , ______, ______, ______, ______ , ______, ______, ______, ______
       ),
 
@@ -851,15 +861,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |                 |  z/Z  |  x/X  |  ɔ/ꓛ  |  ʌ/ꓥ  |  q/ꓭ  |  u/N  |  ɯ/W  |       |       |       |             | BSPC  |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |         |         |         |                                                 |       |       |       |       |       |
+   * |         |         |         |           "Backward Space"                      |       |       |       |       |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_REVERSE] = LAYOUT_60_split_rshift_5x1u(
-      ______      , ______ , ______ , ______   , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______       , ______ , KC_DEL,
-      ______      , REV_Q  , REV_W  , REV_E    , REV_R  , REV_T  , REV_Y  , REV_U  , REV_I  , REV_O  , REV_P  , ______       , ______ , ______,
-      TG(_REVERSE), REV_A  , REV_S  , REV_D    , REV_F  , REV_G  , REV_H  , REV_J  , REV_K  , REV_L  , ______ , ______       , ______ ,
-      ______      , REV_Z  , REV_X  , REV_C    , REV_V  , REV_B  , REV_N  , REV_M  , ______ , ______ , ______ , TG(_REVERSE) , KC_BSPC,
+      ______      , ______ , ______ , ______   , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______ , ______ , KC_DEL,
+      ______      , REV_Q  , REV_W  , REV_E    , REV_R  , REV_T  , REV_Y  , REV_U  , REV_I  , REV_O  , REV_P  , ______ , ______ , ______,
+      TG(_REVERSE), REV_A  , REV_S  , REV_D    , REV_F  , REV_G  , REV_H  , REV_J  , REV_K  , REV_L  , ______ , ______ , ______ ,
+      ______      , REV_Z  , REV_X  , REV_C    , REV_V  , REV_B  , REV_N  , REV_M  , ______ , ______ , ______ , ______ , KC_BSPC,
       ______      , ______ , ______ , REV_SPACE, ______ , ______ , ______ , ______ , ______
       ),
 
@@ -867,22 +877,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ,-----------------------------------------------------------------------------------------------------------------------.
    * |       |       |       |       |       |       |       |       |       |       |       |       |       |               |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |           |   Q   |   W   |   E   |   R   |   T   |   Y   |   U   |   I   |   O   |   P   |       |       |           |
+   * |           |       |       |       |       |       |       |       |       |       |       |       |       |           |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |  _DEFAULT   |   A   |   S   |   D   |   F   |   G   |   H   |   J   |   K   |   L   |       |       |                 |
+   * |  _DEFAULT   |       |       |       |       |       |       |       |       |       |       |       |                 |
    * |-----------------------------------------------------------------------------------------------------------------------+
-   * |                 |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |       |       |       |             |       |
+   * |                 |       |       |       |       |       |       |       |       |       |       |             |       |
    * |-----------------------------------------------------------------------------------------------------------------------+
    * |         |         |         |                                                 |       |       |       |       |       |
    * `-----------------------------------------------------------------------------------------------------------------------'
    */
 
   [_MAD] = LAYOUT_60_split_rshift_5x1u(
-      ______    , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ , ______,
-      ______    , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ , ______,
-      TO(_ZALGO), ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
-      ______    , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
-      ______    , ______, ______, ______, ______ , ______, ______, ______, ______
+      ______  , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ , ______,
+      ______  , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ , ______,
+      TG(_MAD), ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
+      ______  , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
+      ______  , ______, ______, ______, ______ , ______, ______, ______, ______
       ),
 
   /* ZALGO Layer
@@ -905,5 +915,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       TG(_ZALGO), ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
       ______    , ______, ______, ______, ______ , ______, ______, ______, ______, ______ , ______, ______ , ______ ,
       ______    , ______, ______, ______, ______ , ______, ______, ______, ______
+      ),
+
+  /* Accent Layer
+   * ,-----------------------------------------------------------------------------------------------------------------------.
+   * |REG_GRV|       |       |       |       |       |REG_CIR|       |       |       |       |       |       |               |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |           |       |       | REG_E |       |       | REG_Y | REG_U | REG_I | REG_O |       |       |       |           |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |             | REG_A |       |       |       |       |       |       |       |       |REG_TRM|REG_ACU|                 |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |                 |       |       | REG_C |       |       | REG_N |       |REG_CED|       |       |             |       |
+   * |-----------------------------------------------------------------------------------------------------------------------+
+   * |         |         |         |                     ASCII                       |       |       |       |       |       |
+   * `-----------------------------------------------------------------------------------------------------------------------'
+   */
+
+  [_ACCENT] = LAYOUT_60_split_rshift_5x1u(
+        REG_GRV          ,______,______,______     ,______,______,REG_CIR,______,______ ,______,______ ,______             ,______ ,______,
+        ______           ,______,______,REG_E      ,______,______,REG_Y  ,REG_U ,REG_I  ,REG_O ,______ ,______             ,______ ,______,
+        CYCLE_MAD_LAYERS ,REG_A ,______,______     ,______,______,______ ,______,______ ,______,REG_TRM,REG_ACU            ,______ ,
+        ______           ,______,______,REG_C      ,______,______,REG_N  ,______,REG_CED,______,______ ,CYCLE_UPPER_LAYERS ,______ ,
+        ______           ,______,______,OSL(_ASCII),______,______,______ ,______,______
       ),
 };
